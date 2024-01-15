@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "915333756379",
+    "firebase_url": "https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "th-grade-34080",
+    "storage_bucket": "th-grade-34080.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:915333756379:android:a2332be3e87958fed863fe",
+        "android_client_info": {
+          "package_name": "com.example.firebase"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPjD4fHOZU3nijYBo6uLbupWEG7I4y-7Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:915333756379:android:762376026065597cd863fe",
+        "android_client_info": {
+          "package_name": "com.example.testfirebase"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPjD4fHOZU3nijYBo6uLbupWEG7I4y-7Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
