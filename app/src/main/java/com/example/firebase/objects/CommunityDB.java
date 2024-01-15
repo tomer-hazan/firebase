@@ -1,62 +1,44 @@
 package com.example.firebase.objects;
 
 import static com.example.firebase.ui.activitys.Community.initCommunity;
-import static com.example.firebase.ui.fragments.CommunityMapsFragment.setPos;
+import static com.example.firebase.ui.activitys.Community.CDB;
 
 import android.content.Context;
-import android.net.Uri;
-import android.util.Log;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 
-import com.example.firebase.R;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.ListResult;
-import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
-import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
+import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.List;
-import java.util.function.Supplier;
 
 public class CommunityDB {
     HashMap<String,String> followers;//the followers
     //List<String> images;
     HashMap<String,String> admins;//the admins
     Context context;
-    public Location location;//the root gps location
-    Supplier<Integer> radius;//radius of gps location in meters
-    Supplier<String> name;//the name
+    public Location GPSlocation;//the root gps GPSlocation
+    int radius;//radius of gps GPSlocation in meters
+    String name;//the name
 
     DatabaseReference communityRef;
     public CommunityDB(){}
-    public CommunityDB(Context context, DatabaseReference community){
-        communityRef = community;
-        this.context = context;
-        //name = communityRef.child("name").get;
-        communityRef
+
+    public static void toCommunityDB(Context context, DatabaseReference community){
+        community
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        HashMap<String, Object> map = (HashMap<String, Object>)snapshot.getValue();
-                        name = () ->(String)map.get("name");
-                        followers = (HashMap<String,String>)map.get("followers");
-                        admins = (HashMap<String,String>)map.get("admins");
-                        radius = () ->Math.toIntExact((Long) map.get("radius"));
-                        HashMap<String,Double> temoLocation = (HashMap<String,Double>)map.get("GPSlocation");
-                        location = new Location(temoLocation.get("longitude"),temoLocation.get("latitude"));
-                        initCommunity();
-                        setPos(location,radius.get());
+                        String json = new Gson().toJson(snapshot.getValue());
+                        CommunityDB CDB =  new Gson().fromJson(json, CommunityDB.class);
+                        CDB.setCommunityRef(community);
+                        CDB.setContext(context);
+                        com.example.firebase.ui.activitys.Community.CDB = CDB;
+                        initCommunity(CDB);
                     }
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
@@ -70,14 +52,14 @@ public class CommunityDB {
     public void setAdmins(HashMap<String,String> val){
         admins = val;
     }
-    public void setLocation(Location val){
-        location = val;
+    public void setGPSlocation(Location val){
+        GPSlocation = val;
     }
     public void setRadius(int val){
-        radius = () ->val;
+        radius = val;
     }
     public void setName(String val){
-        name = ()->val;
+        name =val;
     }
 
 
@@ -88,14 +70,16 @@ public class CommunityDB {
     public HashMap<String,String> getAdmins(){
         return admins;
     }
-    public Location getLocation(){
-        return location;
+    public Location getGPSlocation(){
+        return GPSlocation;
     }
     public int getRadios(){
-        return radius.get();
+        return radius;
     }
     public String getName(){
-        return name.get();
+        return name;
     }
+    public void setCommunityRef(DatabaseReference dbrf){communityRef = dbrf;}
+    public DatabaseReference getCommunityRef(){return communityRef;}
 
 }

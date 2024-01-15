@@ -21,6 +21,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
 public class SignIn extends AppCompatActivity implements View.OnClickListener {
 
@@ -49,8 +50,6 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
         name = findViewById(R.id.editTextText);
         email = findViewById(R.id.editTextTextEmailAddress);
         password =  findViewById(R.id.editTextNumberPassword);
-        //loginIntent = new Intent(this,Login.class);
-        //startActivity(loginIntent);
         i=0;
         FirebaseDatabase database = FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/");
         myRef = database.getReference("users");

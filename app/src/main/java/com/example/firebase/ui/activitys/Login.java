@@ -17,6 +17,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
 public class Login extends AppCompatActivity implements View.OnClickListener {
 
@@ -59,6 +60,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 //                                Intent sendIntent = new Intent(getApplicationContext(), Community.class);
 //                                Intent sendIntent = new Intent(getApplicationContext(), AIActivity.class);
                                 sendIntent.putExtra("UserRef", userSnapshot.getKey());
+                                sendIntent.putExtra("User", new Gson().toJson(userSnapshot.getValue()));
                                 startActivity(sendIntent);
                                 correctPassword=true;
                             }

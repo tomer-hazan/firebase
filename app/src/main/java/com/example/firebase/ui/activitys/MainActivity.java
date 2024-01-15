@@ -1,7 +1,5 @@
 package com.example.firebase.ui.activitys;
 
-import static android.Manifest.permission_group.CAMERA;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -12,16 +10,16 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.hardware.Camera;
 
 import com.example.firebase.R;
+import com.example.firebase.objects.Location;
 import com.example.firebase.objects.User;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationSettingsRequest;
-import android.hardware.camera2.CameraDevice;
+
 import android.hardware.camera2.CameraManager;
 import android.location.LocationManager;
 import com.google.android.gms.location.LocationRequest;
@@ -30,7 +28,6 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
@@ -40,7 +37,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
@@ -61,6 +57,7 @@ import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
 
 import android.Manifest;
 
@@ -70,57 +67,42 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     TextView tv;
     StorageReference storageRef;
-    DatabaseReference userRef;
     SurfaceView surfaceView;
     EditText imgName;
     LinearLayout linearLayout;
-    User user;
-    CameraDevice.StateCallback stateCallback;
-    String cameraId;
+    HashMap<String,User> user;
     Button submit;
     private LocationRequest locationRequest;
     Button communityBtn;
     CameraManager cameraManager;
     StorageReference imagesRef;
     Boolean haveCamera;
-    private SurfaceHolder surfaceHolder;
-    private Camera camera;
-    private double longitude;
-    private double latitude;
-
+    private Location location;
     private static final int REQUEST_CODE = 22;
-    private String[] neededPermissions = new String[]{CAMERA};
-
     private static final int REQUEST_CAMERA_PERMISSION = 1;
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 123;
 
     private static final int REQUEST_CHECK_SETTINGS = 10001;
     private static final String[] CAMERA_PERMISSIONS = {
             Manifest.permission.CAMERA,
-            //Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
     private static final String[] GPS_PERMISSIONS = {
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION
     };
-    private FusedLocationProviderClient fusedLocationClient;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
         haveCamera = true;
-
         if (!arePermissionsGranted(CAMERA_PERMISSIONS))
             ActivityCompat.requestPermissions(this, CAMERA_PERMISSIONS, REQUEST_CAMERA_PERMISSION);
         if (!arePermissionsGranted(GPS_PERMISSIONS))
             ActivityCompat.requestPermissions(this, GPS_PERMISSIONS, MY_PERMISSIONS_REQUEST_LOCATION);
         imgName = findViewById(R.id.imgName);
         tv = findViewById(R.id.text);
-        linearLayout = findViewById(R.id.ImagesLayout);
+        linearLayout = findViewById(R.id.CommunitiesLayout);
         submit = findViewById(R.id.submit);
         communityBtn = findViewById(R.id.community);
         locationRequest = LocationRequest.create();
@@ -129,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         locationRequest.setFastestInterval(2000);
         getGPS();
         getUser();
-        storageRef = FirebaseStorage.getInstance("gs://th-grade-34080.appspot.com").getReference().child(userRef.getKey());
+        storageRef = FirebaseStorage.getInstance("gs://th-grade-34080.appspot.com").getReference().child((String) user.keySet().toArray()[0]);
         submit.setOnClickListener(this::onClick);
         communityBtn.setOnClickListener(this::onClick);
         imagesRef = storageRef.child("/images/");
@@ -137,17 +119,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     }
+    private void getUser() {
+        user = new HashMap<>();
+        Intent intent = getIntent();
+        if(intent.hasExtra("User")){
+            user.put( intent.getStringExtra("UserRef"),new Gson().fromJson(intent.getStringExtra("User"), User.class));
+            writeToTV();
+        }else{
+            getUserFromRef();
+        }
 
-    private boolean getUser() {
+
+    }
+
+    private boolean getUserFromRef() {
         Intent intent = getIntent();
         String UserID = intent.getStringExtra("UserRef");
-        userRef = FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("users").child(UserID);
+        DatabaseReference userRef = FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("users").child(UserID);
         userRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String json = new Gson().toJson(snapshot.getValue());
-                user = new Gson().fromJson(json, User.class);
-                //user = new User("username",  "email", 11111);
+                user.put( userRef.getKey(),new Gson().fromJson(json, User.class));
                 writeToTV();
                 userRef.removeEventListener(this);
             }
@@ -160,7 +153,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void writeToTV(){
-        tv.setText(user.toString() + "longitude: " + longitude + "latitude: " + latitude);
+        String ret = user.values().toArray()[0].toString();
+        if(location!=null)ret += "longitude: " + location.getLongitude() + "latitude: " + location.getLatitude();
+        tv.setText( ret);
     }
 
 
@@ -194,11 +189,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                             LocationServices.getFusedLocationProviderClient(MainActivity.this)
                                     .removeLocationUpdates(this);
-                            if (locationResult!=null &&locationResult.getLocations().size()>0){
-
-                                latitude = locationResult.getLocations().get(locationResult.getLocations().size()-1).getLatitude();
-                                longitude = locationResult.getLocations().get(locationResult.getLocations().size()-1).getLongitude();
-                            }
+                            if (locationResult!=null &&locationResult.getLocations().size()>0)location = new Location(locationResult.getLocations().get(locationResult.getLocations().size()-1).getLongitude(), locationResult.getLocations().get(locationResult.getLocations().size()-1).getLatitude());
                             writeToTV();
                         }
                     }, Looper.getMainLooper());
@@ -251,7 +242,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             break;
 
                         case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                            //Device does not have location
+                            //Device does not have GPSlocation
                             break;
                     }
                 }
@@ -271,8 +262,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference storageRef = storage.getReference();
 
-            // Create a reference to the desired location in Firebase Storage
-            StorageReference imageRef = storageRef.child(userRef.getKey() + "/images/" + imgName.getText().toString());
+            StorageReference imageRef = storageRef.child((String) user.keySet().toArray()[0] + "/images/" + imgName.getText().toString());
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             photo.compress(Bitmap.CompressFormat.JPEG, 100, stream);
             byte[] byteArray = stream.toByteArray();

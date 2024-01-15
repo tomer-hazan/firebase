@@ -101,7 +101,7 @@ public class MapsFragmentPositionTracker extends Fragment implements LocationLis
                             }
                             myPos = new LatLng(latitude.get(),longitude.get());
                             googleMap.moveCamera(CameraUpdateFactory.newLatLng(myPos));
-                            toast("location: (long,lat) ("+longitude.get()+", "+latitude.get()+")");
+                            toast("GPSlocation: (long,lat) ("+longitude.get()+", "+latitude.get()+")");
                         }
                     }, Looper.getMainLooper());
 
@@ -148,7 +148,7 @@ public class MapsFragmentPositionTracker extends Fragment implements LocationLis
                         break;
 
                     case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                        //Device does not have location
+                        //Device does not have GPSlocation
                         break;
                 }
             }
@@ -195,13 +195,13 @@ public class MapsFragmentPositionTracker extends Fragment implements LocationLis
     public void onLocationChanged(@NonNull Location location) {
         myPos = new LatLng(location.getLatitude(),location.getLongitude());
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(myPos));
-        toast("location: (long,lat) ("+myPos.longitude+", "+myPos.longitude+")");
+        toast("GPSlocation: (long,lat) ("+myPos.longitude+", "+myPos.longitude+")");
     }
     @SuppressLint("MissingPermission")
     private void startLocationUpdates() {
         locationManager = (LocationManager) this.getActivity().getSystemService(Context.LOCATION_SERVICE);
 
-        // Register for location updates
+        // Register for GPSlocation updates
         if (locationManager != null) {
             locationManager.requestLocationUpdates(
                     LocationManager.GPS_PROVIDER,

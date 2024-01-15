@@ -24,7 +24,7 @@ import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
 
 import static com.example.firebase.ui.activitys.Community.initFollowersAndAdmins;
-import static com.example.firebase.ui.activitys.Community.initImages;
+
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 import com.squareup.picasso.Picasso;
@@ -35,30 +35,30 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public class Community {
-    public List<User> followers;//the followers
-    public List<User> admins;//the admins
+    public HashMap<String,User> followers;//the followers
+    public HashMap<String,User> admins;//the admins
     public List<ImageView> images;
-    public Location location;//the root gps location
-    public Supplier<Integer> radius;//radius of gps location in meters
+    public Location GPSlocation;//the root gps GPSlocation
+    public Supplier<Integer> radius;//radius of gps GPSlocation in meters
     public Supplier<String> name;//the name
     public Context context;
     public DatabaseReference communityRef;
     public Community(){}
-//   public Community(List<User> followers, List<User> admins, List<ImageView> images, Location location, Context context){
+//   public Community(List<User> followers, List<User> admins, List<ImageView> images, Location GPSlocation, Context context){
 //        this.admins = admins;
 //        this.followers = followers;
 //        this.images = images;
-//        this.location = location;
+//        this.GPSlocation = GPSlocation;
 //        this.context = context;
 //   }
     public Community(CommunityDB CDB){
         communityRef = CDB.communityRef;
-        name = CDB.name;
-        radius = CDB.radius;
-        location = CDB.location;
+        name = ()-> CDB.name;
+        radius = ()-> CDB.radius;
+        GPSlocation = CDB.GPSlocation;
         context = CDB.context;
-        followers = new ArrayList<>();
-        admins = new ArrayList<>();
+        followers = new HashMap<>();
+        admins = new HashMap<>();
         images = new ArrayList<>();
         initImages();
         toUsers(CDB.followers, followers);
@@ -110,7 +110,7 @@ public class Community {
         });
         return image;
     }
-    private void toUsers(HashMap<String,String> usersList, List<User> Users){
+    private void toUsers(HashMap<String,String> usersList, HashMap<String,User> Users){
         for (String user : usersList.keySet()) {
             FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("users").child(user)
                     .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -119,7 +119,7 @@ public class Community {
                             String json = new Gson().toJson(snapshot.getValue());
                             LinkedTreeMap<String, String> newUser = (LinkedTreeMap<String, String>)new Gson().fromJson(json, Object.class);
                             User tempUser = new User(newUser.get("username"),newUser.get("email"),newUser.get("password"));
-                            Users.add(tempUser);
+                            Users.put(user,tempUser);
                             initFollowersAndAdmins();//toDO this func runs on every user (follower or admin) make it run only when all the users arrived
                         }
 
@@ -132,14 +132,14 @@ public class Community {
     }
 
     public void setContext(Context context){this.context=context;}
-    public void setFollowers(HashMap<String,String> val){//toDO
+    public void setFollowers(HashMap<String,User> val){
         followers = val;
     }
-    public void setAdmins(HashMap<String,String> val){//toDO
+    public void setAdmins(HashMap<String,User> val){
         admins = val;
     }
-    public void setLocation(Location val){
-        location = val;
+    public void setGPSlocation(Location val){
+        GPSlocation = val;
     }
     public void setRadius(int val){
         radius = () ->val;
@@ -150,14 +150,14 @@ public class Community {
 
 
     public Context getContext(){return context;}
-    public List<User> getFollowers(){
+    public HashMap<String, User> getFollowers(){
         return followers;
     }
-    public List<User> getAdmins(){
+    public HashMap<String, User> getAdmins(){
         return admins;
     }
-    public Location getLocation(){
-        return location;
+    public Location getGPSlocation(){
+        return GPSlocation;
     }
     public int getRadios(){
         return radius.get();

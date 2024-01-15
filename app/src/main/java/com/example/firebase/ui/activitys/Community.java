@@ -24,7 +24,7 @@ public class Community extends AppCompatActivity {
     static LinearLayout imagesLayout;
     static LinearLayout followersLayout;
     static LinearLayout adminsLayout;
-    static CommunityDB CDB;
+    public static CommunityDB CDB;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,7 +35,7 @@ public class Community extends AppCompatActivity {
         adminsLayout = findViewById(R.id.admins);
 
         createMapFragment();
-        CDB = new CommunityDB(getApplicationContext(), FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("communities").child("rand"));
+        CommunityDB.toCommunityDB(getApplicationContext(), FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("communities").child("rand"));
 
         System.out.println("temp");
     }
@@ -53,7 +53,7 @@ public class Community extends AppCompatActivity {
         // Commit the transaction
         fragmentTransaction.commit();
     }
-    public static void initCommunity(){
+    public static void initCommunity(CommunityDB CDB){
         currentCommunity = new com.example.firebase.objects.Community(CDB);
         comName.setText(currentCommunity.name.get());
 
@@ -68,7 +68,7 @@ public class Community extends AppCompatActivity {
         TextView temp;
         followersLayout.removeAllViews();
         if(currentCommunity.followers.size()!=0){
-            for (User follower : currentCommunity.followers) {
+            for (User follower : currentCommunity.followers.values()) {
                 temp =  new TextView(currentCommunity.context);
                 temp.setText(follower.username);
                 followersLayout.addView(temp);
@@ -76,7 +76,7 @@ public class Community extends AppCompatActivity {
         }
         adminsLayout.removeAllViews();
         if(currentCommunity.admins.size()!=0){
-            for (User admin : currentCommunity.admins) {
+            for (User admin : currentCommunity.admins.values()) {
                 temp =  new TextView(currentCommunity.context);
                 temp.setText(admin.username);
                 adminsLayout.addView(temp);
