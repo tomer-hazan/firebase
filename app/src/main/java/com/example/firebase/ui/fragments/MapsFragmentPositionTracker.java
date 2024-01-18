@@ -10,8 +10,10 @@ import androidx.fragment.app.Fragment;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -22,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.firebase.R;
+import com.example.firebase.ui.activitys.CommunityCreation;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.LocationCallback;
@@ -36,6 +39,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
@@ -54,6 +58,8 @@ public class MapsFragmentPositionTracker extends Fragment implements LocationLis
     private LatLng myPos;
     private static GoogleMap googleMap;
     private LocationManager locationManager;
+    View.OnClickListener onClickListener;
+    boolean sendToCommunityCreation;
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
         /**
@@ -76,6 +82,10 @@ public class MapsFragmentPositionTracker extends Fragment implements LocationLis
 
         }
     };
+    public MapsFragmentPositionTracker(View.OnClickListener oc,boolean sendToCommunityCreation){
+        this.onClickListener = oc;
+        this.sendToCommunityCreation=sendToCommunityCreation;
+    }
     private void GPS(GoogleMap googleMap){
         LocationRequest locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -196,7 +206,25 @@ public class MapsFragmentPositionTracker extends Fragment implements LocationLis
         myPos = new LatLng(location.getLatitude(),location.getLongitude());
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(myPos));
         toast("GPSlocation: (long,lat) ("+myPos.longitude+", "+myPos.longitude+")");
+        if(sendToCommunityCreation){
+            sendToCommunityCreation=false;
+            CommunityCreation.setGPSCords(myPos.latitude,myPos.longitude,onClickListener);
+        }
     }
+    public void drawCircle(LatLng point,int radius){    // Instantiating CircleOptions to draw a circle around the marker
+        CircleOptions circleOptions = new CircleOptions();
+        // Specifying the center of the circle
+        circleOptions.center(point);
+        // Radius of the circle
+        circleOptions.radius(radius);
+        // Border color of the circle
+        circleOptions.strokeColor(Color.BLACK);
+        // Fill color of the circle
+        circleOptions.fillColor(0x30ff0000);
+        // Border width of the circle
+        circleOptions.strokeWidth(2);
+        // Adding the circle to the GoogleMap
+        googleMap.addCircle(circleOptions);}
     @SuppressLint("MissingPermission")
     private void startLocationUpdates() {
         locationManager = (LocationManager) this.getActivity().getSystemService(Context.LOCATION_SERVICE);

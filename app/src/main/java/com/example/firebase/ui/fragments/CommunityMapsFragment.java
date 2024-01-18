@@ -26,6 +26,7 @@ public class CommunityMapsFragment extends Fragment {
     static GoogleMap map;
     static Location currLocation= null;
     static double radius;
+
     public static void setPos(Location location, double GivenRadius ){
         currLocation = location;
         radius = GivenRadius;
@@ -38,6 +39,20 @@ public class CommunityMapsFragment extends Fragment {
 
     }
     private static void drawCircle(LatLng point){    // Instantiating CircleOptions to draw a circle around the marker
+        CircleOptions circleOptions = new CircleOptions();
+        // Specifying the center of the circle
+        circleOptions.center(point);
+        // Radius of the circle
+        circleOptions.radius(radius);
+        // Border color of the circle
+        circleOptions.strokeColor(Color.BLACK);
+        // Fill color of the circle
+        circleOptions.fillColor(0x30ff0000);
+        // Border width of the circle
+        circleOptions.strokeWidth(2);
+        // Adding the circle to the GoogleMap
+        map.addCircle(circleOptions);}
+    private static void drawCircle(LatLng point,int radius){    // Instantiating CircleOptions to draw a circle around the marker
         CircleOptions circleOptions = new CircleOptions();
         // Specifying the center of the circle
         circleOptions.center(point);

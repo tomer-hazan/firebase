@@ -24,8 +24,14 @@ public class CommunityDB {
     public Location GPSlocation;//the root gps GPSlocation
     int radius;//radius of gps GPSlocation in meters
     String name;//the name
-
     DatabaseReference communityRef;
+    public CommunityDB(String name,HashMap<String,String> followers,HashMap<String,String> admins,Location GPSlocation,int radius){
+        this.name =name;
+        this.followers=followers;
+        this.admins = admins;
+        this.GPSlocation = GPSlocation;
+        this.radius = radius;
+    }
     public CommunityDB(){}
 
     public static void toCommunityDB(Context context, DatabaseReference community){
@@ -34,6 +40,11 @@ public class CommunityDB {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         String json = new Gson().toJson(snapshot.getValue());
+                        try{
+                            CommunityDB CDB =  new Gson().fromJson(json, CommunityDB.class);
+                        }catch (Exception e){
+
+                        }
                         CommunityDB CDB =  new Gson().fromJson(json, CommunityDB.class);
                         CDB.setCommunityRef(community);
                         CDB.setContext(context);

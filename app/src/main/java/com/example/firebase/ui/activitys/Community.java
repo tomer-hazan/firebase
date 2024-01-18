@@ -1,9 +1,12 @@
 package com.example.firebase.ui.activitys;
 
+import static com.example.firebase.ui.fragments.CommunityMapsFragment.setPos;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -25,6 +28,7 @@ public class Community extends AppCompatActivity {
     static LinearLayout followersLayout;
     static LinearLayout adminsLayout;
     public static CommunityDB CDB;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,8 +39,9 @@ public class Community extends AppCompatActivity {
         adminsLayout = findViewById(R.id.admins);
 
         createMapFragment();
-        CommunityDB.toCommunityDB(getApplicationContext(), FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("communities").child("rand"));
-
+        Intent intent = getIntent();
+        if(intent.hasExtra("community")) CommunityDB.toCommunityDB(getApplicationContext(), FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("communities").child(intent.getStringExtra("community")));
+        else CommunityDB.toCommunityDB(getApplicationContext(), FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("communities").child("rand"));
         System.out.println("temp");
     }
     private void createMapFragment(){
@@ -56,6 +61,7 @@ public class Community extends AppCompatActivity {
     public static void initCommunity(CommunityDB CDB){
         currentCommunity = new com.example.firebase.objects.Community(CDB);
         comName.setText(currentCommunity.name.get());
+        setPos(currentCommunity.GPSlocation,currentCommunity.radius.get());
 
     }
     public static void initImages(){
