@@ -38,24 +38,24 @@ public class Community {
     public HashMap<String,User> followers;//the followers
     public HashMap<String,User> admins;//the admins
     public List<ImageView> images;
-    public Location GPSlocation;//the root gps GPSlocation
-    public Supplier<Integer> radius;//radius of gps GPSlocation in meters
+    public Location GPSlocation;//the root gps gpslocation
+    public Supplier<Integer> radius;//radius of gps gpslocation in meters
     public Supplier<String> name;//the name
     public Context context;
     public DatabaseReference communityRef;
     public Community(){}
-//   public Community(List<User> followers, List<User> admins, List<ImageView> images, Location GPSlocation, Context context){
+//   public Community(List<User> followers, List<User> admins, List<ImageView> images, Location gpslocation, Context context){
 //        this.admins = admins;
 //        this.followers = followers;
 //        this.images = images;
-//        this.GPSlocation = GPSlocation;
+//        this.gpslocation = gpslocation;
 //        this.context = context;
 //   }
     public Community(CommunityDB CDB){
         communityRef = CDB.communityRef;
         name = ()-> CDB.name;
         radius = ()-> CDB.radius;
-        GPSlocation = CDB.GPSlocation;
+        GPSlocation = CDB.gpslocation;
         context = CDB.context;
         followers = new HashMap<>();
         admins = new HashMap<>();
@@ -159,7 +159,7 @@ public class Community {
     public Location getGPSlocation(){
         return GPSlocation;
     }
-    public int getRadios(){
+    public int getRadius(){
         return radius.get();
     }
     public String getName(){

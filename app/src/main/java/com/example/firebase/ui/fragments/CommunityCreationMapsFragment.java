@@ -1,16 +1,9 @@
 package com.example.firebase.ui.fragments;
 
 
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -22,6 +15,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 
 import com.example.firebase.R;
 import com.example.firebase.ui.activitys.CommunityCreation;
@@ -39,6 +37,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -46,7 +45,7 @@ import com.google.android.gms.tasks.Task;
 
 import java.util.function.Supplier;
 
-public class MapsFragmentPositionTracker extends Fragment implements LocationListener {
+public class CommunityCreationMapsFragment extends Fragment{
 
     private static final int REQUEST_CHECK_SETTINGS = 10001;
     private static final String[] GPS_PERMISSIONS = {
@@ -59,6 +58,7 @@ public class MapsFragmentPositionTracker extends Fragment implements LocationLis
     private static GoogleMap googleMap;
     private LocationManager locationManager;
     View.OnClickListener onClickListener;
+    Circle mapCircle;
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
         /**
@@ -75,13 +75,24 @@ public class MapsFragmentPositionTracker extends Fragment implements LocationLis
             LatLng sydney = new LatLng(-34, 151);
             googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-            MapsFragmentPositionTracker.googleMap = googleMap;
+            CommunityCreationMapsFragment.googleMap = googleMap;
             GPS(googleMap);
-            if(arePermissionsGranted(GPS_PERMISSIONS))startLocationUpdates();
-
+            CircleOptions circleOptions = new CircleOptions();
+            // Specifying the center of the circle
+            circleOptions.center(new LatLng(0,0));
+            // Radius of the circle
+            circleOptions.radius(0);
+            // Border color of the circle
+            circleOptions.strokeColor(Color.BLACK);
+            // Fill color of the circle
+            circleOptions.fillColor(0x30ff0000);
+            // Border width of the circle
+            circleOptions.strokeWidth(2);
+            // Adding the circle to the GoogleMap
+            mapCircle = googleMap.addCircle(circleOptions);
         }
     };
-    public MapsFragmentPositionTracker(View.OnClickListener oc){
+    public CommunityCreationMapsFragment(View.OnClickListener oc){
         this.onClickListener = oc;
     }
     private void GPS(GoogleMap googleMap){
@@ -100,7 +111,7 @@ public class MapsFragmentPositionTracker extends Fragment implements LocationLis
                         public void onLocationResult(@NonNull LocationResult locationResult) {
                             super.onLocationResult(locationResult);
 
-                            LocationServices.getFusedLocationProviderClient(MapsFragmentPositionTracker.this.getActivity())
+                            LocationServices.getFusedLocationProviderClient(CommunityCreationMapsFragment.this.getActivity())
                                     .removeLocationUpdates(this);
                             if (locationResult!=null &&locationResult.getLocations().size()>0){
 
@@ -109,7 +120,9 @@ public class MapsFragmentPositionTracker extends Fragment implements LocationLis
                             }
                             myPos = new LatLng(latitude.get(),longitude.get());
                             googleMap.moveCamera(CameraUpdateFactory.newLatLng(myPos));
+                            googleMap.animateCamera( CameraUpdateFactory.zoomTo( 17.0f ) );
                             toast("GPSlocation: (long,lat) ("+longitude.get()+", "+latitude.get()+")");
+                            CommunityCreation.setGPSCords(latitude.get(),longitude.get(),onClickListener);
                         }
                     }, Looper.getMainLooper());
 
@@ -198,14 +211,12 @@ public class MapsFragmentPositionTracker extends Fragment implements LocationLis
         t.setText(text);
         t.show();
     }
-
-    @Override
-    public void onLocationChanged(@NonNull Location location) {
-        myPos = new LatLng(location.getLatitude(),location.getLongitude());
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(myPos));
-        toast("GPSlocation: (long,lat) ("+myPos.longitude+", "+myPos.longitude+") onlocation change");
+    public Circle getMapCircle(){
+        return mapCircle;
     }
+
     public void drawCircle(LatLng point,int radius){    // Instantiating CircleOptions to draw a circle around the marker
+        mapCircle.remove();
         CircleOptions circleOptions = new CircleOptions();
         // Specifying the center of the circle
         circleOptions.center(point);
@@ -218,20 +229,5 @@ public class MapsFragmentPositionTracker extends Fragment implements LocationLis
         // Border width of the circle
         circleOptions.strokeWidth(2);
         // Adding the circle to the GoogleMap
-        googleMap.addCircle(circleOptions);}
-    @SuppressLint("MissingPermission")
-    private void startLocationUpdates() {
-        locationManager = (LocationManager) this.getActivity().getSystemService(Context.LOCATION_SERVICE);
-
-        // Register for GPSlocation updates
-        if (locationManager != null) {
-            locationManager.requestLocationUpdates(
-                    LocationManager.GPS_PROVIDER,
-                    10000L,
-                    0F,
-                    this::onLocationChanged
-            );
-        }
-    }
-
+        mapCircle = googleMap.addCircle(circleOptions);}
 }

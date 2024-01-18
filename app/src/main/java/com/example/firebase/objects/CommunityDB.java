@@ -1,7 +1,6 @@
 package com.example.firebase.objects;
 
 import static com.example.firebase.ui.activitys.Community.initCommunity;
-import static com.example.firebase.ui.activitys.Community.CDB;
 
 import android.content.Context;
 
@@ -13,7 +12,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 
 public class CommunityDB {
@@ -21,11 +19,17 @@ public class CommunityDB {
     //List<String> images;
     HashMap<String,String> admins;//the admins
     Context context;
-    public Location GPSlocation;//the root gps GPSlocation
-    int radius;//radius of gps GPSlocation in meters
+    Location gpslocation;//the root gps gpslocation
+    int radius;//radius of gps gpslocation in meters
     String name;//the name
-
     DatabaseReference communityRef;
+    public CommunityDB(String name,HashMap<String,String> followers,HashMap<String,String> admins,Location GPSlocation,int radius){
+        this.name =name;
+        this.followers=followers;
+        this.admins = admins;
+        this.gpslocation = GPSlocation;
+        this.radius = radius;
+    }
     public CommunityDB(){}
 
     public static void toCommunityDB(Context context, DatabaseReference community){
@@ -34,6 +38,11 @@ public class CommunityDB {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         String json = new Gson().toJson(snapshot.getValue());
+                        try{
+                            CommunityDB CDB =  new Gson().fromJson(json, CommunityDB.class);
+                        }catch (Exception e){
+
+                        }
                         CommunityDB CDB =  new Gson().fromJson(json, CommunityDB.class);
                         CDB.setCommunityRef(community);
                         CDB.setContext(context);
@@ -52,8 +61,8 @@ public class CommunityDB {
     public void setAdmins(HashMap<String,String> val){
         admins = val;
     }
-    public void setGPSlocation(Location val){
-        GPSlocation = val;
+    public void setGpslocation(Location val){
+        gpslocation = val;
     }
     public void setRadius(int val){
         radius = val;
@@ -70,10 +79,10 @@ public class CommunityDB {
     public HashMap<String,String> getAdmins(){
         return admins;
     }
-    public Location getGPSlocation(){
-        return GPSlocation;
+    public Location getGpslocation(){
+        return gpslocation;
     }
-    public int getRadios(){
+    public int getRadius(){
         return radius;
     }
     public String getName(){

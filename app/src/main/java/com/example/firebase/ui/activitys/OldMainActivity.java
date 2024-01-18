@@ -1,38 +1,20 @@
 package com.example.firebase.ui.activitys;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-
-import com.example.firebase.R;
-import com.example.firebase.objects.Location;
-import com.example.firebase.objects.User;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.ResolvableApiException;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationSettingsRequest;
-
 import android.hardware.camera2.CameraManager;
 import android.location.LocationManager;
-import com.google.android.gms.location.LocationRequest;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.Gravity;
+import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -41,7 +23,21 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import com.example.firebase.R;
+import com.example.firebase.objects.Location;
+import com.example.firebase.objects.User;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -52,7 +48,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
@@ -63,25 +58,21 @@ import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
-import java.util.Map;
 
-import android.Manifest;
-
-import androidx.core.content.ContextCompat;
-
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class OldMainActivity extends AppCompatActivity implements View.OnClickListener {
 
     TextView tv;
+    StorageReference storageRef;
+    SurfaceView surfaceView;
     EditText imgName;
-    Map<String, TextView> communities;
     LinearLayout linearLayout;
-    HashMap<DatabaseReference,User> user;
+    HashMap<String,User> user;
     Button submit;
     private LocationRequest locationRequest;
     Button communityBtn;
     CameraManager cameraManager;
+    StorageReference imagesRef;
     Boolean haveCamera;
-    ActivityResultLauncher<Intent>  cameraActivity;
     private Location location;
     private static final int REQUEST_CODE = 22;
     private static final int REQUEST_CAMERA_PERMISSION = 1;
@@ -101,7 +92,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         haveCamera = true;
-        communities = new HashMap<>();
         if (!arePermissionsGranted(CAMERA_PERMISSIONS))
             ActivityCompat.requestPermissions(this, CAMERA_PERMISSIONS, REQUEST_CAMERA_PERMISSION);
         if (!arePermissionsGranted(GPS_PERMISSIONS))
@@ -117,10 +107,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         locationRequest.setFastestInterval(2000);
         getGPS();
         getUser();
+        storageRef = FirebaseStorage.getInstance("gs://th-grade-34080.appspot.com").getReference().child((String) user.keySet().toArray()[0]);
         submit.setOnClickListener(this::onClick);
         communityBtn.setOnClickListener(this::onClick);
-        getCommunities();
-        initActivityResult();
+        imagesRef = storageRef.child("/images/");
+        getImages();
 
 
     }
@@ -128,8 +119,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         user = new HashMap<>();
         Intent intent = getIntent();
         if(intent.hasExtra("User")){
-            DatabaseReference userRef = FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("users").child(intent.getStringExtra("UserRef"));
-            user.put( userRef,new Gson().fromJson(intent.getStringExtra("User"), User.class));
+            user.put( intent.getStringExtra("UserRef"),new Gson().fromJson(intent.getStringExtra("User"), User.class));
             writeToTV();
         }else{
             getUserFromRef();
@@ -146,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String json = new Gson().toJson(snapshot.getValue());
-                user.put( userRef,new Gson().fromJson(json, User.class));
+                user.put( userRef.getKey(),new Gson().fromJson(json, User.class));
                 writeToTV();
                 userRef.removeEventListener(this);
             }
@@ -170,30 +160,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         if (view.getId() == submit.getId()) {
             if (arePermissionsGranted(CAMERA_PERMISSIONS)) {
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                cameraActivity.launch(intent);
+                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(cameraIntent, REQUEST_CODE);
             } else {
                 toast("need camera to work");
             }
-            getCommunities();
+            getImages();
             getGPS();
         } else if (view.getId() == communityBtn.getId()) {
-            Intent sendIntent = new Intent(getApplicationContext(), CommunityCreation.class);
-            sendIntent.putExtra("user",user.keySet().toArray(new DatabaseReference[0])[0].getKey());
+            Intent sendIntent = new Intent(getApplicationContext(), Community.class);
             startActivity(sendIntent);
-        } else if (view.getClass().equals(TextView.class)) {
-            Intent sendIntent = new Intent(this, Community.class);
-            String rightCommunityRef;
-            String[] CommunityRefArr = communities.keySet().toArray(new String[0]);
-            TextView[] tvArr =  communities.values().toArray(new TextView[0]);
-            for(int i=0;i<tvArr.length;i++){
-                if(tvArr[i].equals(view)){
-                    sendIntent.putExtra("community",CommunityRefArr[i]);
-                    startActivity(sendIntent);
-                }
-            }
-
-
         }
 
     }
@@ -201,13 +177,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @SuppressLint("MissingPermission")
     private void getGPS(){
         if (arePermissionsGranted(GPS_PERMISSIONS) && isGPSEnabled()) {
-            LocationServices.getFusedLocationProviderClient(MainActivity.this)
+            LocationServices.getFusedLocationProviderClient(OldMainActivity.this)
                     .requestLocationUpdates(locationRequest, new LocationCallback() {
                         @Override
                         public void onLocationResult(@NonNull LocationResult locationResult) {
                             super.onLocationResult(locationResult);
 
-                            LocationServices.getFusedLocationProviderClient(MainActivity.this)
+                            LocationServices.getFusedLocationProviderClient(OldMainActivity.this)
                                     .removeLocationUpdates(this);
                             if (locationResult!=null &&locationResult.getLocations().size()>0)location = new Location(locationResult.getLocations().get(locationResult.getLocations().size()-1).getLongitude(), locationResult.getLocations().get(locationResult.getLocations().size()-1).getLatitude());
                             writeToTV();
@@ -246,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 try {
                     LocationSettingsResponse response = task.getResult(ApiException.class);
-                    Toast.makeText(MainActivity.this, "GPS is already tured on", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(OldMainActivity.this, "GPS is already tured on", Toast.LENGTH_SHORT).show();
 
                 } catch (ApiException e) {
 
@@ -255,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                             try {
                                 ResolvableApiException resolvableApiException = (ResolvableApiException) e;
-                                resolvableApiException.startResolutionForResult(MainActivity.this, REQUEST_CHECK_SETTINGS);
+                                resolvableApiException.startResolutionForResult(OldMainActivity.this, REQUEST_CHECK_SETTINGS);
                             } catch (IntentSender.SendIntentException ex) {
                                 ex.printStackTrace();
                             }
@@ -275,38 +251,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 
-    private void initActivityResult(){
-        cameraActivity = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                new ActivityResultCallback<ActivityResult>() {
-                    @Override
-                    public void onActivityResult(ActivityResult result) {
-                        if((result.getResultCode() == RESULT_OK) && (result.getData() != null)){
-                            Bitmap photo = (Bitmap) result.getData().getExtras().get("data");
-                            FirebaseStorage storage = FirebaseStorage.getInstance();
-                            StorageReference storageRef = storage.getReference();
-
-                            StorageReference imageRef = storageRef.child(user.keySet().toArray(new DatabaseReference[0])[0].getKey() + "/images/" + imgName.getText().toString());
-                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                            photo.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                            byte[] byteArray = stream.toByteArray();
-
-                            // Upload the byte array to Firebase Storage
-                            UploadTask uploadTask = imageRef.putBytes(byteArray);
-
-                            uploadTask.addOnSuccessListener(taskSnapshot -> {
-                                toast("the image has been loaded");
-                                // You can get the download URL of the image from taskSnapshot.getDownloadUrl()
-                            }).addOnFailureListener(e -> {
-                                toast("failed to load img");
-                            }).addOnCompleteListener(taskSnapshot -> {
-                                getCommunities();
-                            });
-                        }
-                    }
-                });
-    }
-
     @Override
     protected void onActivityResult(int requestCode,int resultCode,@NonNull Intent data) {
         if(REQUEST_CODE==requestCode && resultCode == RESULT_OK){
@@ -314,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference storageRef = storage.getReference();
 
-            StorageReference imageRef = storageRef.child(user.keySet().toArray(new DatabaseReference[0])[0].getKey() + "/images/" + imgName.getText().toString());
+            StorageReference imageRef = storageRef.child((String) user.keySet().toArray()[0] + "/images/" + imgName.getText().toString());
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             photo.compress(Bitmap.CompressFormat.JPEG, 100, stream);
             byte[] byteArray = stream.toByteArray();
@@ -328,43 +272,52 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }).addOnFailureListener(e -> {
                 toast("failed to load img");
             }).addOnCompleteListener(taskSnapshot -> {
-                getCommunities();
+                getImages();
             });
 
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void getCommunities() {
-        linearLayout.removeAllViews();
-        DatabaseReference commRef = FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("communities");
-        Query query = commRef.orderByChild("name");
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+    private void getImage(StorageReference imageRef){
+        ImageView image = new ImageView(getApplicationContext());
+        image.setImageDrawable(getDrawable(R.drawable.null_img));
+        linearLayout.addView(image);
+        imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                query.removeEventListener(this);
-                TextView tempTV;
-                Map<String, Map<String,String>> tempCommunities = (Map<String, Map<String,String>>)dataSnapshot.getValue();
-                String[] communitiesRefArry =  tempCommunities.keySet().toArray(new String[0]);
-                Map<String,String>[] communitiesArry = tempCommunities.values().toArray(new Map[0]);
-                for(int i=0;i<communitiesArry.length;i++){
-                    tempTV =new TextView(getApplicationContext());
-                    tempTV.setOnClickListener(MainActivity.this::onClick);
-                    tempTV.setText(communitiesArry[i].get("name"));
-                    tempTV.setTextSize(25);
-                    tempTV.setGravity(Gravity.CENTER);
-                    tempTV.setPadding(0,50,0,0);
-                    communities.put(communitiesRefArry[i],tempTV);
-                    linearLayout.addView(tempTV);
-                }
+            public void onSuccess(Uri uri) {
+                Picasso.get()
+                        .load(uri)
+                        .into(image);
+                //toast("succses");
             }
+
+        }).addOnFailureListener(new OnFailureListener() {
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-                toast("The read failed: " + databaseError.getCode());
+            public void onFailure(@NonNull Exception exception) {
+                Log.e("the error1",exception.toString());
+                Log.e("the error2",exception.getMessage());
             }
         });
     }
-
+    private void getImages() {
+        linearLayout.removeAllViews();
+        imagesRef.listAll()
+                .addOnSuccessListener(new OnSuccessListener<ListResult>() {
+                    @Override
+                    public void onSuccess(ListResult listResult) {
+                        for (StorageReference item : listResult.getItems()) {
+                            getImage(item);
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors that occur during listing
+                    }
+                });
+    }
     private boolean arePermissionsGranted(String[] neededPermissions) {
         for (String permission : neededPermissions) {
             if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
@@ -379,6 +332,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         t.setText(text);
         t.show();
     }
+
 
 
 }
