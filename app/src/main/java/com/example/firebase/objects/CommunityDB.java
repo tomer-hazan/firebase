@@ -22,6 +22,7 @@ public class CommunityDB {
     Location gpslocation;//the root gps gpslocation
     int radius;//radius of gps gpslocation in meters
     String name;//the name
+
     DatabaseReference communityRef;
     public CommunityDB(String name,HashMap<String,String> followers,HashMap<String,String> admins,Location GPSlocation,int radius){
         this.name =name;
