@@ -27,7 +27,7 @@ public class Community extends AppCompatActivity {
     static LinearLayout imagesLayout;
     static LinearLayout followersLayout;
     static LinearLayout adminsLayout;
-    public static CommunityDB CDB;
+    static CommunityDB CDB;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +40,8 @@ public class Community extends AppCompatActivity {
 
         createMapFragment();
         Intent intent = getIntent();
-        if(intent.hasExtra("community")) CommunityDB.toCommunityDB(getApplicationContext(), FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("communities").child(intent.getStringExtra("community")));
-        else CommunityDB.toCommunityDB(getApplicationContext(), FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("communities").child("rand"));
+        if(intent.hasExtra("community")) CommunityDB.toCommunityDB(getApplicationContext(), FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("communities").child(intent.getStringExtra("community")),CDB);
+        else CommunityDB.toCommunityDB(getApplicationContext(), FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("communities").child("rand"),CDB);
         System.out.println("temp");
     }
     private void createMapFragment(){

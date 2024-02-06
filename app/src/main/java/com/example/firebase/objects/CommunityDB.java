@@ -12,6 +12,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 
 public class CommunityDB {
@@ -33,21 +34,48 @@ public class CommunityDB {
     }
     public CommunityDB(){}
 
-    public static void toCommunityDB(Context context, DatabaseReference community){
+//    public static void toCommunityDB(Context context, DatabaseReference community){
+//        community
+//                .addListenerForSingleValueEvent(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                        String json = new Gson().toJson(snapshot.getValue());
+//                        try{
+//                            CommunityDB CDB =  new Gson().fromJson(json, CommunityDB.class);
+//                        }catch (Exception e){
+//
+//                        }
+//                        CommunityDB CDB =  new Gson().fromJson(json, CommunityDB.class);//toDO this line can crash because of lack of 0 followers, fix this
+//                        CDB.setCommunityRef(community);
+//                        CDB.setContext(context);
+//                        com.example.firebase.ui.activitys.Community.CDB = CDB;
+//                        initCommunity(CDB);
+//                    }
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError error) {
+//                    }
+//                });
+//    }
+    public static void toCommunityDB(Context context, DatabaseReference community, CommunityDB CDB){
         community
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         String json = new Gson().toJson(snapshot.getValue());
-                        try{
-                            CommunityDB CDB =  new Gson().fromJson(json, CommunityDB.class);
-                        }catch (Exception e){
-
+//                        try{
+//                            CommunityDB temp =  new Gson().fromJson(json, CommunityDB.class);
+//                        }catch (Exception e){
+//
+//                        }
+                        CommunityDB temp =  new Gson().fromJson(json, CommunityDB.class);//toDO this line can crash because of lack of 0 followers, fix this
+                        try {
+                            CDB.clone(temp);
+                        } catch (IllegalAccessException e) {
+                            throw new RuntimeException(e);
                         }
-                        CommunityDB CDB =  new Gson().fromJson(json, CommunityDB.class);//toDO this line can crash because of lack of 0 followers, fix this
                         CDB.setCommunityRef(community);
                         CDB.setContext(context);
-                        com.example.firebase.ui.activitys.Community.CDB = CDB;
+                        //com.example.firebase.ui.activitys.Community.CDB = CDB;
                         initCommunity(CDB);
                     }
                     @Override
@@ -91,5 +119,11 @@ public class CommunityDB {
     }
     public void setCommunityRef(DatabaseReference dbrf){communityRef = dbrf;}
     public DatabaseReference getCommunityRef(){return communityRef;}
+    public void clone(CommunityDB other) throws IllegalAccessException {
+        for (Field f:other.getClass().getDeclaredFields()
+             ) {
+            f.set(this,f.get(other));
+        }
+    }
 
 }
