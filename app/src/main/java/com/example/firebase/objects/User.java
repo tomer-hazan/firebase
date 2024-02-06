@@ -2,6 +2,8 @@ package com.example.firebase.objects;
 
 import com.google.firebase.database.IgnoreExtraProperties;
 
+import java.lang.reflect.Field;
+
 @IgnoreExtraProperties
 public class User {
 
@@ -25,6 +27,12 @@ public class User {
     @Override
     public String toString(){
         return "username: " + username + " " + "email: " + email + " " + "password: " + password;
+    }
+    public void clone(User other) throws IllegalAccessException {
+        for (Field f:other.getClass().getDeclaredFields()
+        ) {
+            f.set(this,f.get(other));
+        }
     }
 
 }

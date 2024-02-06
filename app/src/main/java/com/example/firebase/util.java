@@ -1,6 +1,7 @@
 package com.example.firebase;
 
 import android.content.Context;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -30,5 +31,10 @@ public class util {
                     }
                 });
         return ret[0];
+    }
+    public static void toast(String text,Context context){
+        Toast t = new Toast(context);
+        t.setText(text);
+        t.show();
     }
 }
