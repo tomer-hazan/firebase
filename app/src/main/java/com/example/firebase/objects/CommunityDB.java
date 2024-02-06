@@ -44,7 +44,7 @@ public class CommunityDB {
                         }catch (Exception e){
 
                         }
-                        CommunityDB CDB =  new Gson().fromJson(json, CommunityDB.class);
+                        CommunityDB CDB =  new Gson().fromJson(json, CommunityDB.class);//toDO this line can crash because of lack of 0 followers, fix this
                         CDB.setCommunityRef(community);
                         CDB.setContext(context);
                         com.example.firebase.ui.activitys.Community.CDB = CDB;
