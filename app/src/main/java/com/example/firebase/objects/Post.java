@@ -27,7 +27,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Post {//toDO make an activity that shows all the posts for testing
+public class Post {
     String poster;
     public String title;
     public String content;

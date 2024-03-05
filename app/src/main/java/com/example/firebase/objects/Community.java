@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 
 import com.example.firebase.R;
+import com.example.firebase.util;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -18,12 +19,14 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
 
 import static com.example.firebase.ui.activitys.Community.initFollowersAndAdmins;
+import static com.example.firebase.ui.activitys.Community.initPosts;
 
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
@@ -38,6 +41,8 @@ public class Community {
     public HashMap<String,User> followers;//the followers
     public HashMap<String,User> admins;//the admins
     public List<ImageView> images;
+    List<Post> posts;
+
     public Location GPSlocation;//the root gps gpslocation
     public Supplier<Integer> radius;//radius of gps gpslocation in meters
     public Supplier<String> name;//the name
@@ -59,58 +64,31 @@ public class Community {
         context = CDB.context;
         followers = new HashMap<>();
         admins = new HashMap<>();
-        images = new ArrayList<>();
-        initImages();
+        posts = new ArrayList<>();
+        getPosts();
         toUsers(CDB.followers, followers);
         toUsers(CDB.admins, admins);
     }
-    private List<ImageView> initImages(){//@toDO make this work
-        //String id = communityRef.getRoot();
-        StorageReference imageRef = FirebaseStorage.getInstance("gs://th-grade-34080.appspot.com").getReference().child(communityRef.getKey()).child("/images/");
-        imageRef.listAll()
-                .addOnSuccessListener(new OnSuccessListener<ListResult>() {
-                    @Override
-                    public void onSuccess(ListResult listResult) {
-                        for (StorageReference item : listResult.getItems()) {
-                            images.add( getImage(item));
-                        }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle any errors that occur during listing
-                    }
-                });
-        return null;
-    }
-    private ImageView getImage(StorageReference imageRef){
-        ImageView image = new ImageView(context);
-        image.setImageDrawable(getDrawable(context, R.drawable.null_img));
-        imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+    private void getPosts(){
+        //postsLayout.removeAllViews();
+        Query query = FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("posts").orderByChild("title");
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onSuccess(Uri uri) {
-                Picasso.get()
-                        .load(uri)
-                        .into(image);
-                //toast("succses");
-            }
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                query.removeEventListener(this);
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    Post p = postSnapshot.getValue(Post.class);
+                    p.setPostRef(postSnapshot.getRef());
+                    posts.add(p);
+                }
 
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                Log.e("the error1",exception.toString());
-                Log.e("the error2",exception.getMessage());
+                initPosts(posts);
             }
-        })
-                .addOnCompleteListener(new OnCompleteListener<Uri>(){
             @Override
-            public void onComplete(@NonNull Task<Uri> task) {
-                com.example.firebase.ui.activitys.Community.initImages();
+            public void onCancelled(DatabaseError databaseError) {
+                util.toast("The read failed: " + databaseError.getCode(),context);
             }
-        })
-        ;
-        return image;
+        });
     }
     private void toUsers(HashMap<String,String> usersList, HashMap<String,User> Users){
         for (String user : usersList.keySet()) {
