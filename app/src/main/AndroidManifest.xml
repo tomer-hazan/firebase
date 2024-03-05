@@ -23,7 +23,7 @@
         android:theme="@style/Theme.TestFireBase"
         tools:targetApi="31">
         <activity
-            android:name=".ui.activitys.Login"
+            android:name=".ui.activitys.MainActivity"
             android:exported="false" />
 
         <activity
@@ -54,10 +54,10 @@
             android:name=".ui.activitys.SignIn"
             android:exported="false" />
         <activity
-            android:name=".ui.activitys.MainActivity"
+            android:name=".ui.activitys.postsActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activitys.postsActivity"
+            android:name=".ui.activitys.Login"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
