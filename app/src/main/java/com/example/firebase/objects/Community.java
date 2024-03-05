@@ -102,12 +102,14 @@ public class Community {
                 Log.e("the error1",exception.toString());
                 Log.e("the error2",exception.getMessage());
             }
-        }).addOnCompleteListener(new OnCompleteListener<Uri>(){
+        })
+                .addOnCompleteListener(new OnCompleteListener<Uri>(){
             @Override
             public void onComplete(@NonNull Task<Uri> task) {
                 com.example.firebase.ui.activitys.Community.initImages();
             }
-        });
+        })
+        ;
         return image;
     }
     private void toUsers(HashMap<String,String> usersList, HashMap<String,User> Users){

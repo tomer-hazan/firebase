@@ -2,6 +2,7 @@ package com.example.firebase.adaptor;
 
 import static androidx.appcompat.content.res.AppCompatResources.getDrawable;
 import static com.example.firebase.ui.activitys.Community.initFollowersAndAdmins;
+import static com.example.firebase.util.toast;
 
 import android.content.Context;
 import android.net.Uri;
@@ -124,7 +125,8 @@ public class PostAdaptor extends RecyclerView.Adapter<PostAdaptor.ViewHolder> {
                 });
         return images;
     }
-    private ImageView getImage(StorageReference imageRef){//toDo make image display in their post
+    private ImageView getImage(StorageReference imageRef){
+        // r post
         ImageView image = new ImageView(context);
         image.setImageDrawable(getDrawable(context, R.drawable.null_img));
         imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -133,7 +135,7 @@ public class PostAdaptor extends RecyclerView.Adapter<PostAdaptor.ViewHolder> {
                 Picasso.get()
                         .load(uri)
                         .into(image);
-                //toast("succses");
+                toast("succses",context);
             }
 
         }).addOnFailureListener(new OnFailureListener() {
@@ -141,11 +143,6 @@ public class PostAdaptor extends RecyclerView.Adapter<PostAdaptor.ViewHolder> {
             public void onFailure(@NonNull Exception exception) {
                 Log.e("the error1",exception.toString());
                 Log.e("the error2",exception.getMessage());
-            }
-        }).addOnCompleteListener(new OnCompleteListener<Uri>(){
-            @Override
-            public void onComplete(@NonNull Task<Uri> task) {
-                com.example.firebase.ui.activitys.Community.initImages();
             }
         });
         return image;
