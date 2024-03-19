@@ -11,10 +11,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.firebase.Global;
 import com.example.firebase.R;
 import com.example.firebase.adaptor.PostAdaptor;
 import com.example.firebase.objects.CommunityDB;
@@ -31,13 +33,14 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Community extends AppCompatActivity {
+public class Community extends AppCompatActivity implements View.OnClickListener {
     static com.example.firebase.objects.Community currentCommunity;
     static TextView comName;
     static RecyclerView postsLayout;
     static LinearLayout followersLayout;
     static LinearLayout adminsLayout;
     static CommunityDB CDB;
+    static Button postCreation;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +50,8 @@ public class Community extends AppCompatActivity {
         postsLayout = findViewById(R.id.postsRecycleView);
         followersLayout = findViewById(R.id.followers);
         adminsLayout = findViewById(R.id.admins);
+        postCreation = findViewById(R.id.postCreation);
+        postCreation.setOnClickListener(this::onClick);
         CDB = new CommunityDB();
 
         postsLayout.setLayoutManager(new LinearLayoutManager(this));
@@ -79,6 +84,7 @@ public class Community extends AppCompatActivity {
         currentCommunity = new com.example.firebase.objects.Community(CDB);
         comName.setText(currentCommunity.name.get());
         setPos(currentCommunity.GPSlocation,currentCommunity.radius.get());
+        Global.community = currentCommunity;
 
     }
     public static void initFollowersAndAdmins(){
@@ -100,5 +106,11 @@ public class Community extends AppCompatActivity {
                 adminsLayout.addView(temp);
             }
         }
+    }
+
+    @Override
+    public void onClick(View v) {
+        Intent sendIntent = new Intent(getApplicationContext(), PostsCreation.class);
+        startActivity(sendIntent);
     }
 }

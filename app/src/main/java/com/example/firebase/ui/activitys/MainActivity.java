@@ -15,6 +15,7 @@ import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 
+import com.example.firebase.Global;
 import com.example.firebase.R;
 import com.example.firebase.objects.Location;
 import com.example.firebase.objects.User;
@@ -75,7 +76,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     EditText imgName;
     Map<String, TextView> communities;
     LinearLayout linearLayout;
-    HashMap<DatabaseReference,User> user;
     Button submit;
     private LocationRequest locationRequest;
     Button communityBtn;
@@ -125,11 +125,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
     private void getUser() {
-        user = new HashMap<>();
-        Intent intent = getIntent();
-        if(intent.hasExtra("User")){
-            DatabaseReference userRef = FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("users").child(intent.getStringExtra("UserRef"));
-            user.put( userRef,new Gson().fromJson(intent.getStringExtra("User"), User.class));
+        if(Global.user!=null){
             writeToTV();
         }else{
             getUserFromRef();
@@ -140,13 +136,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private boolean getUserFromRef() {
         Intent intent = getIntent();
-        String UserID = intent.getStringExtra("UserRef");
-        DatabaseReference userRef = FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("users").child(UserID);
+        DatabaseReference userRef = Global.userRef;
         userRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String json = new Gson().toJson(snapshot.getValue());
-                user.put( userRef,new Gson().fromJson(json, User.class));
+                Global.user = new Gson().fromJson(json, User.class);
+                Global.userRef = userRef;
                 writeToTV();
                 userRef.removeEventListener(this);
             }
@@ -159,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void writeToTV(){
-        String ret = user.values().toArray()[0].toString();
+        String ret = Global.user.toString();
         if(location!=null)ret += "longitude: " + location.getLongitude() + "latitude: " + location.getLatitude();
         tv.setText( ret);
     }
@@ -179,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             getGPS();
         } else if (view.getId() == communityBtn.getId()) {
             Intent sendIntent = new Intent(getApplicationContext(), CommunityCreation.class);
-            sendIntent.putExtra("user",user.keySet().toArray(new DatabaseReference[0])[0].getKey());
+//            sendIntent.putExtra("user",user.keySet().toArray(new DatabaseReference[0])[0].getKey());
             startActivity(sendIntent);
         } else if (view.getClass().equals(TextView.class)) {
             Intent sendIntent = new Intent(this, Community.class);
@@ -286,7 +282,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             FirebaseStorage storage = FirebaseStorage.getInstance();
                             StorageReference storageRef = storage.getReference();
 
-                            StorageReference imageRef = storageRef.child(user.keySet().toArray(new DatabaseReference[0])[0].getKey() + "/images/" + imgName.getText().toString());
+                            StorageReference imageRef = storageRef.child(Global.userRef.getKey() + "/images/" + imgName.getText().toString());
                             ByteArrayOutputStream stream = new ByteArrayOutputStream();
                             photo.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                             byte[] byteArray = stream.toByteArray();
@@ -314,7 +310,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference storageRef = storage.getReference();
 
-            StorageReference imageRef = storageRef.child(user.keySet().toArray(new DatabaseReference[0])[0].getKey() + "/images/" + imgName.getText().toString());
+            StorageReference imageRef = storageRef.child(Global.userRef.getKey() + "/images/" + imgName.getText().toString());
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             photo.compress(Bitmap.CompressFormat.JPEG, 100, stream);
             byte[] byteArray = stream.toByteArray();

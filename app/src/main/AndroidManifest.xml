@@ -23,9 +23,11 @@
         android:theme="@style/Theme.TestFireBase"
         tools:targetApi="31">
         <activity
+            android:name=".ui.activitys.PostsCreation"
+            android:exported="false" />
+        <activity
             android:name=".ui.activitys.MainActivity"
             android:exported="false" />
-
         <activity
             android:name=".ui.activitys.CommunityCreation"
             android:exported="false" />
@@ -33,7 +35,6 @@
             android:name=".ui.activitys.AIActivity"
             android:exported="false" />
         <!--
-
              To get one, follow the directions here:
 
                 https://developers.google.com/maps/documentation/android-sdk/get-api-key

@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.firebase.Global;
 import com.example.firebase.R;
 import com.example.firebase.objects.CommunityDB;
 import com.example.firebase.objects.Location;
@@ -64,7 +65,7 @@ public class CommunityCreation extends AppCompatActivity implements View.OnClick
         myRef = FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("communities");
         createMapFragment();
         Intent intent = getIntent();
-        userRef = intent.getStringExtra("user");
+        userRef = Global.userRef.getKey();
         radius.addTextChangedListener(this);
 
 

@@ -1,5 +1,7 @@
 package com.example.firebase.ui.activitys;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -9,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.firebase.Global;
 import com.example.firebase.R;
 import com.example.firebase.objects.User;
 import com.google.firebase.database.DataSnapshot;
@@ -18,6 +21,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class Login extends AppCompatActivity implements View.OnClickListener {
 
@@ -57,10 +65,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                         for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                             if(userSnapshot.child("password").getValue().toString().equals(password.getText().toString())){
                                 Intent sendIntent = new Intent(getApplicationContext(), MainActivity.class);
-//                                Intent sendIntent = new Intent(getApplicationContext(), Community.class);
-//                                Intent sendIntent = new Intent(getApplicationContext(), AIActivity.class);
-                                sendIntent.putExtra("UserRef", userSnapshot.getKey());
-                                sendIntent.putExtra("User", new Gson().toJson(userSnapshot.getValue()));
+                                Global.user = new Gson().fromJson( new Gson().toJson(userSnapshot.getValue()),User.class);
+                                Global.userRef=userSnapshot.getRef();
                                 startActivity(sendIntent);
                                 correctPassword=true;
                             }

@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.firebase.Global;
 import com.example.firebase.R;
 import com.example.firebase.objects.User;
 import com.google.firebase.database.DataSnapshot;
@@ -81,9 +82,8 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                     toast("user name is taken");
 
                 } else{
-                    DatabaseReference userRef = uploadUser();
+                    Global.userRef = uploadUser();
                     Intent sendIntent = new Intent(getApplicationContext(), MainActivity.class);
-                    sendIntent.putExtra("UserRef", userRef.getKey());
                     startActivity(sendIntent);
                 }
 

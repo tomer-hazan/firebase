@@ -29,6 +29,7 @@ import java.util.List;
 
 public class Post {
     String poster;
+    String community;
     public String title;
     public String content;
 
@@ -41,6 +42,7 @@ public class Post {
     public void setPoster(String val){
         poster = val;
     }
+    public void setCommunity(String val){content=val;}
     public void setContent(String val){
         content = val;
     }
@@ -51,6 +53,7 @@ public class Post {
     public String getPoster(){
         return poster;
     }
+    public String getCommunity(){return community;}
     public String getContent(){
         return content;
     }

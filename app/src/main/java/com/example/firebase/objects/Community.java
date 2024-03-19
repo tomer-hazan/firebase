@@ -71,18 +71,29 @@ public class Community {
     }
     private void getPosts(){
         //postsLayout.removeAllViews();
-        Query query = FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("posts").orderByChild("title");
+//        Query query = FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("posts").orderByChild("title");
+        Query query = communityRef.child("posts").orderByChild("title");
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 query.removeEventListener(this);
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    Post p = postSnapshot.getValue(Post.class);
-                    p.setPostRef(postSnapshot.getRef());
-                    posts.add(p);
-                }
+                    DatabaseReference postRef = FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("posts").child(postSnapshot.getKey());
+                    postRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            Post p = snapshot.getValue(Post.class);
+                            p.setPostRef(snapshot.getRef());
+                            posts.add(p);
+                            initPosts(posts);
+                        }
 
-                initPosts(posts);
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                }
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
