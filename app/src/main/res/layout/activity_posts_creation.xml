@@ -8,14 +8,14 @@
 
     <TextView
         android:id="@+id/textView5"
-        android:layout_width="293dp"
-        android:layout_height="126dp"
-        android:layout_marginTop="40dp"
+        android:layout_width="372dp"
+        android:layout_height="72dp"
+        android:layout_marginTop="16dp"
         android:gravity="center"
-        android:text="create your community"
-        android:textSize="50dp"
+        android:text="create a new post"
+        android:textSize="35dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.464"
+        app:layout_constraintHorizontal_bias="0.47"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -32,12 +32,12 @@
         app:layout_constraintHorizontal_bias="0.447"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView5"
-        app:layout_constraintVertical_bias="0.116" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <EditText
         android:id="@+id/content"
-        android:layout_width="345dp"
-        android:layout_height="279dp"
+        android:layout_width="353dp"
+        android:layout_height="188dp"
         android:layout_marginTop="32dp"
         android:ems="10"
         android:hint="Content"
@@ -59,5 +59,31 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/addImage"
+        android:layout_width="304dp"
+        android:layout_height="49dp"
+        android:layout_marginBottom="264dp"
+        android:text="add images"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <HorizontalScrollView
+        android:layout_width="425dp"
+        android:layout_height="164dp"
+        app:layout_constraintBottom_toTopOf="@+id/submit"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addImage">
+
+        <LinearLayout
+            android:id="@+id/imagesLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" />
+    </HorizontalScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

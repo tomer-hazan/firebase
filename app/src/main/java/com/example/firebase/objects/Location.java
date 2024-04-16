@@ -44,4 +44,12 @@ public class Location {
         // Calculate the distance
         return R * c;
     }
+    public double getMinLatBound(double tolerance){return latitude-tolerance/Math.sqrt(2);}
+    public double getMaxLatBound(double tolerance){
+        return latitude+tolerance/Math.sqrt(2);
+    }
+    public double getMinLonBound(double tolerance){return longitude-tolerance/Math.sqrt(2);}
+    public double getMaxLonBound(double tolerance){
+        return longitude+tolerance/Math.sqrt(2);
+    }
 }

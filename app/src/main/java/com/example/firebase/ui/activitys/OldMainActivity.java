@@ -96,10 +96,8 @@ public class OldMainActivity extends AppCompatActivity implements View.OnClickLi
             ActivityCompat.requestPermissions(this, CAMERA_PERMISSIONS, REQUEST_CAMERA_PERMISSION);
         if (!arePermissionsGranted(GPS_PERMISSIONS))
             ActivityCompat.requestPermissions(this, GPS_PERMISSIONS, MY_PERMISSIONS_REQUEST_LOCATION);
-        imgName = findViewById(R.id.imgName);
         tv = findViewById(R.id.text);
         linearLayout = findViewById(R.id.CommunitiesLayout);
-        submit = findViewById(R.id.submit);
         communityBtn = findViewById(R.id.community);
         locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);

@@ -60,7 +60,6 @@ public class PostAdaptor extends RecyclerView.Adapter<PostAdaptor.ViewHolder> {
             poster = (itemView).findViewById(R.id.poster);
             content = (itemView).findViewById(R.id.content);
             linearLayout =itemView.findViewById(R.id.linear);
-
         }
     }
 
@@ -77,7 +76,7 @@ public class PostAdaptor extends RecyclerView.Adapter<PostAdaptor.ViewHolder> {
         holder.title.setText(post.getTitle());
         holder.content.setText(post.getContent());
         initUser(post.getPoster(),holder);
-        initImages(post.getPostRef().getKey(),holder);
+        initImages(post,holder);
     }
 
     @Override
@@ -104,51 +103,15 @@ public class PostAdaptor extends RecyclerView.Adapter<PostAdaptor.ViewHolder> {
     private void setUser(ViewHolder holder,String userName){
         holder.poster.setText(userName);
     }
-    private List<ImageView> initImages(String postID,ViewHolder holder){
-        List<ImageView> images = new ArrayList<>();
-        StorageReference imageRef = FirebaseStorage.getInstance("gs://th-grade-34080.appspot.com").getReference().child(postID).child("/images/");
-        imageRef.listAll()
-                .addOnSuccessListener(new OnSuccessListener<ListResult>() {
-                    @Override
-                    public void onSuccess(ListResult listResult) {
-                        for (StorageReference item : listResult.getItems()) {
-                            setImage( holder,getImage(item));
+    private void initImages(Post post,ViewHolder holder){
+        if(post.getImages()==null)return;
 
-                        }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle any errors that occur during listing
-                    }
-                });
-        return images;
-    }
-    private ImageView getImage(StorageReference imageRef){
-        // r post
-        ImageView image = new ImageView(context);
-        image.setImageDrawable(getDrawable(context, R.drawable.null_img));
-        imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                Picasso.get()
-                        .load(uri)
-                        .into(image);
-                toast("succses",context);
+        for (ImageView img:post.getImages()) {
+            if(img.getParent() != null) {
+                ((ViewGroup)img.getParent()).removeView(img);
             }
-
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                Log.e("the error1",exception.toString());
-                Log.e("the error2",exception.getMessage());
-            }
-        });
-        return image;
-    }
-    private void setImage(ViewHolder holder, ImageView imageView){
-        holder.linearLayout.addView(imageView);
+            holder.linearLayout.addView(img);
+        }
     }
 }
 

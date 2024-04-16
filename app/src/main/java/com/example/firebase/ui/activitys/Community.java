@@ -2,13 +2,17 @@ package com.example.firebase.ui.activitys;
 
 import static com.example.firebase.ui.fragments.CommunityMapsFragment.setPos;
 
+import static java.security.AccessController.getContext;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -18,6 +22,7 @@ import android.widget.TextView;
 
 import com.example.firebase.Global;
 import com.example.firebase.R;
+import com.example.firebase.VerticalSpaceItemDecoration;
 import com.example.firebase.adaptor.PostAdaptor;
 import com.example.firebase.objects.CommunityDB;
 import com.example.firebase.objects.Post;
@@ -59,10 +64,12 @@ public class Community extends AppCompatActivity implements View.OnClickListener
         Intent intent = getIntent();
         if(intent.hasExtra("community")) CommunityDB.toCommunityDB(getApplicationContext(), FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("communities").child(intent.getStringExtra("community")),CDB);
         else CommunityDB.toCommunityDB(getApplicationContext(), FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("communities").child("rand"),CDB);
-        System.out.println("temp");
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(postsLayout.getContext(), DividerItemDecoration.VERTICAL);
+        dividerItemDecoration.setDrawable(getDrawable(R.drawable.divider));
+        postsLayout.addItemDecoration(dividerItemDecoration);
     }
-    public static void initPosts(List<Post> posts){
-        PostAdaptor adapter = new PostAdaptor(posts, currentCommunity.context);
+    public static void initPosts(){
+        PostAdaptor adapter = new PostAdaptor(currentCommunity.getPosts(), currentCommunity.context);
         postsLayout.setAdapter(adapter);
     }
 

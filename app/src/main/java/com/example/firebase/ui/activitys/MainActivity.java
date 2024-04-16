@@ -28,16 +28,14 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import android.hardware.camera2.CameraManager;
 import android.location.LocationManager;
 import com.google.android.gms.location.LocationRequest;
-import android.net.Uri;
+
 import android.os.Bundle;
 import android.os.Looper;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,8 +44,6 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -56,11 +52,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
-import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
@@ -71,12 +65,11 @@ import android.Manifest;
 import androidx.core.content.ContextCompat;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+    private double maxDistance = 500;
 
     TextView tv;
-    EditText imgName;
     Map<String, TextView> communities;
     LinearLayout linearLayout;
-    Button submit;
     private LocationRequest locationRequest;
     Button communityBtn;
     CameraManager cameraManager;
@@ -100,38 +93,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-        haveCamera = true;
         communities = new HashMap<>();
         if (!arePermissionsGranted(CAMERA_PERMISSIONS))
             ActivityCompat.requestPermissions(this, CAMERA_PERMISSIONS, REQUEST_CAMERA_PERMISSION);
         if (!arePermissionsGranted(GPS_PERMISSIONS))
             ActivityCompat.requestPermissions(this, GPS_PERMISSIONS, MY_PERMISSIONS_REQUEST_LOCATION);
-        imgName = findViewById(R.id.imgName);
         tv = findViewById(R.id.text);
         linearLayout = findViewById(R.id.CommunitiesLayout);
-        submit = findViewById(R.id.submit);
         communityBtn = findViewById(R.id.community);
         locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationRequest.setInterval(5000);
         locationRequest.setFastestInterval(2000);
         getGPS();
-        getUser();
-        submit.setOnClickListener(this::onClick);
+        getUserIfNull();
         communityBtn.setOnClickListener(this::onClick);
-        getCommunities();
-        initActivityResult();
+        //getRecomendedCommunities();
 
 
     }
-    private void getUser() {
-        if(Global.user!=null){
-            writeToTV();
-        }else{
+    private void getUserIfNull() {
+        if(Global.user==null){
             getUserFromRef();
         }
-
-
     }
 
     private boolean getUserFromRef() {
@@ -143,7 +127,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 String json = new Gson().toJson(snapshot.getValue());
                 Global.user = new Gson().fromJson(json, User.class);
                 Global.userRef = userRef;
-                writeToTV();
                 userRef.removeEventListener(this);
             }
 
@@ -154,26 +137,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return (intent != null);
     }
 
-    private void writeToTV(){
-        String ret = Global.user.toString();
-        if(location!=null)ret += "longitude: " + location.getLongitude() + "latitude: " + location.getLatitude();
-        tv.setText( ret);
-    }
-
 
     @SuppressLint("MissingPermission")
     @Override
     public void onClick(View view) {
-        if (view.getId() == submit.getId()) {
-            if (arePermissionsGranted(CAMERA_PERMISSIONS)) {
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                cameraActivity.launch(intent);
-            } else {
-                toast("need camera to work");
-            }
-            getCommunities();
-            getGPS();
-        } else if (view.getId() == communityBtn.getId()) {
+        if (view.getId() == communityBtn.getId()) {
             Intent sendIntent = new Intent(getApplicationContext(), CommunityCreation.class);
 //            sendIntent.putExtra("user",user.keySet().toArray(new DatabaseReference[0])[0].getKey());
             startActivity(sendIntent);
@@ -206,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             LocationServices.getFusedLocationProviderClient(MainActivity.this)
                                     .removeLocationUpdates(this);
                             if (locationResult!=null &&locationResult.getLocations().size()>0)location = new Location(locationResult.getLocations().get(locationResult.getLocations().size()-1).getLongitude(), locationResult.getLocations().get(locationResult.getLocations().size()-1).getLatitude());
-                            writeToTV();
+                            getRecomendedCommunities();
                         }
                     }, Looper.getMainLooper());
 
@@ -271,70 +239,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 
-    private void initActivityResult(){
-        cameraActivity = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                new ActivityResultCallback<ActivityResult>() {
-                    @Override
-                    public void onActivityResult(ActivityResult result) {
-                        if((result.getResultCode() == RESULT_OK) && (result.getData() != null)){
-                            Bitmap photo = (Bitmap) result.getData().getExtras().get("data");
-                            FirebaseStorage storage = FirebaseStorage.getInstance();
-                            StorageReference storageRef = storage.getReference();
-
-                            StorageReference imageRef = storageRef.child(Global.userRef.getKey() + "/images/" + imgName.getText().toString());
-                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                            photo.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                            byte[] byteArray = stream.toByteArray();
-
-                            // Upload the byte array to Firebase Storage
-                            UploadTask uploadTask = imageRef.putBytes(byteArray);
-
-                            uploadTask.addOnSuccessListener(taskSnapshot -> {
-                                toast("the image has been loaded");
-                                // You can get the download URL of the image from taskSnapshot.getDownloadUrl()
-                            }).addOnFailureListener(e -> {
-                                toast("failed to load img");
-                            }).addOnCompleteListener(taskSnapshot -> {
-                                getCommunities();
-                            });
-                        }
-                    }
-                });
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode,int resultCode,@NonNull Intent data) {
-        if(REQUEST_CODE==requestCode && resultCode == RESULT_OK){
-            Bitmap photo = (Bitmap) data.getExtras().get("data");
-            FirebaseStorage storage = FirebaseStorage.getInstance();
-            StorageReference storageRef = storage.getReference();
-
-            StorageReference imageRef = storageRef.child(Global.userRef.getKey() + "/images/" + imgName.getText().toString());
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            photo.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-            byte[] byteArray = stream.toByteArray();
-
-            // Upload the byte array to Firebase Storage
-            UploadTask uploadTask = imageRef.putBytes(byteArray);
-
-            uploadTask.addOnSuccessListener(taskSnapshot -> {
-                toast("the image has been loaded");
-                // You can get the download URL of the image from taskSnapshot.getDownloadUrl()
-            }).addOnFailureListener(e -> {
-                toast("failed to load img");
-            }).addOnCompleteListener(taskSnapshot -> {
-                getCommunities();
-            });
-
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    private void getCommunities() {
+    private void getRecomendedCommunities() {
         linearLayout.removeAllViews();
         DatabaseReference commRef = FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("communities");
-        Query query = commRef.orderByChild("name");
+//        Query query = commRef.child("gpslocation").orderByChild("latitude").startAt(location.getMinLatBound(maxDistance)).endAt(location.getMaxLatBound(maxDistance)).orderByChild("longitude").startAt(location.getMinLonBound(maxDistance)).endAt(location.getMaxLonBound(maxDistance));
+        Query query = commRef.orderByChild("name")
+                .limitToFirst(100);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

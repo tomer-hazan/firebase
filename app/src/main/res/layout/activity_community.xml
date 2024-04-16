@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.activitys.Community">
+    tools:context=".ui.activitys.Community"
+    android:layout_gravity="center">
 
 
         <TextView
@@ -50,15 +51,15 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/postsRecycleView"
-            android:layout_width="436dp"
-            android:layout_height="594dp"
+            android:layout_width="298dp"
+            android:layout_height="444dp"
             android:layout_marginTop="120dp"
             app:layout_constraintBottom_toTopOf="@+id/fragment_maps"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.96"
+            app:layout_constraintHorizontal_bias="0.495"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0"></androidx.recyclerview.widget.RecyclerView>
+            app:layout_constraintVertical_bias="1.0"></androidx.recyclerview.widget.RecyclerView>
 
         <ScrollView
             android:id="@+id/scrollView4"
@@ -76,7 +77,9 @@
                     android:id="@+id/admins"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical" />
+                    android:orientation="vertical"
+                    android:layout_gravity="center"
+                    android:paddingBottom="50dp"/>
         </ScrollView>
 
         <TextView

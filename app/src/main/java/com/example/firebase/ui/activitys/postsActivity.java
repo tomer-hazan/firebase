@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.example.firebase.R;
 import com.example.firebase.adaptor.PostAdaptor;
 import com.example.firebase.objects.Post;
+import com.example.firebase.objects.PostDB;
 import com.example.firebase.objects.User;
 import com.example.firebase.util;
 import com.google.firebase.database.DataSnapshot;
@@ -54,7 +55,11 @@ public class postsActivity extends AppCompatActivity {
                 List<Post> posts = new ArrayList<>();
                 query.removeEventListener(this);
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    Post p = postSnapshot.getValue(Post.class);
+//                    Post p = postSnapshot.getValue(Post.class);
+//                    p.setPostRef(postSnapshot.getRef());
+//                    posts.add(p);
+                    PostDB pDB = postSnapshot.getValue(PostDB.class);//toDO make sure that works
+                    Post p = new Post(pDB);
                     p.setPostRef(postSnapshot.getRef());
                     posts.add(p);
                 }

@@ -33,13 +33,14 @@ public class PostDB {
     String poster;
     String title;
     String content;
-
+    List<String> images;
     DatabaseReference postRef;
     Context context;
-    public PostDB(String poster,String title,String content){
+    public PostDB(String poster,String title,String content,List<String> images){
        this.title = title;
        this.content=content;
        this.poster = poster;
+       this.images=images;
 
     }
     public PostDB(){}
@@ -71,6 +72,7 @@ public class PostDB {
     public void setTitle(String val){
         title =val;
     }
+    public void setImages(List<String> list){this.images=list;}
 
 
     public Context getContext(){return context;}
@@ -83,6 +85,7 @@ public class PostDB {
     public String getTitle(){
         return title;
     }
+    public List<String> getImages(){return images;}
     public void setPostRef(DatabaseReference dbrf){postRef = dbrf;}
     public DatabaseReference getPostRef(){return postRef;}
 
