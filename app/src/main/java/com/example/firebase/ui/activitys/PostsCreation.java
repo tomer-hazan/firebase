@@ -107,6 +107,7 @@ public class PostsCreation extends AppCompatActivity implements View.OnClickList
             uploadPost();
             toast("uploaded successfully");
             Intent sendIntent = new Intent(getApplicationContext(), Community.class);
+            sendIntent.putExtra("community",communityRef.getKey());
             startActivity(sendIntent);
         }
         else if (view.getId() == addImage.getId()) {

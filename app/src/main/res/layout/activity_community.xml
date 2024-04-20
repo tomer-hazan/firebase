@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.activitys.Community"
-    android:layout_gravity="center">
+    android:layout_gravity="center"
+    android:id="@+id/layoutID">
 
 
         <TextView
@@ -51,8 +52,8 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/postsRecycleView"
-            android:layout_width="298dp"
-            android:layout_height="444dp"
+            android:layout_width="314dp"
+            android:layout_height="408dp"
             android:layout_marginTop="120dp"
             app:layout_constraintBottom_toTopOf="@+id/fragment_maps"
             app:layout_constraintEnd_toEndOf="parent"
@@ -111,6 +112,21 @@
             android:text="create post"
             app:layout_constraintBottom_toTopOf="@+id/postsRecycleView"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.192"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/scrollView3" />
+            app:layout_constraintTop_toBottomOf="@+id/scrollView3"
+            app:layout_constraintVertical_bias="0.521" />
+
+        <Button
+            android:id="@+id/followButton"
+            android:layout_width="109dp"
+            android:layout_height="46dp"
+            android:text="follow"
+            android:backgroundTint="@android:color/holo_red_dark"
+            app:layout_constraintBottom_toTopOf="@+id/postsRecycleView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.831"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/scrollView3"
+            app:layout_constraintVertical_bias="0.521" />
 </androidx.constraintlayout.widget.ConstraintLayout>

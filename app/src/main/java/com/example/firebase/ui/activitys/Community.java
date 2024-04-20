@@ -5,6 +5,8 @@ import static com.example.firebase.ui.fragments.CommunityMapsFragment.setPos;
 import static java.security.AccessController.getContext;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -12,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
@@ -31,6 +34,7 @@ import com.example.firebase.ui.fragments.CommunityMapsFragment;
 import com.example.firebase.util;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
@@ -46,24 +50,33 @@ public class Community extends AppCompatActivity implements View.OnClickListener
     static LinearLayout adminsLayout;
     static CommunityDB CDB;
     static Button postCreation;
+    static Button followButton;
+    static ConstraintLayout activityLayout;
+    static DatabaseReference currentCommunityRef;
+    static boolean isFollowing=false;
+    static boolean isOwner=false;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_community);
         comName = findViewById(R.id.name);
+        activityLayout = findViewById(R.id.layoutID);
         postsLayout = findViewById(R.id.postsRecycleView);
         followersLayout = findViewById(R.id.followers);
         adminsLayout = findViewById(R.id.admins);
         postCreation = findViewById(R.id.postCreation);
+        followButton = findViewById(R.id.followButton);
         postCreation.setOnClickListener(this::onClick);
+        followButton.setOnClickListener(this::onClick);
         CDB = new CommunityDB();
 
         postsLayout.setLayoutManager(new LinearLayoutManager(this));
         createMapFragment();
         Intent intent = getIntent();
-        if(intent.hasExtra("community")) CommunityDB.toCommunityDB(getApplicationContext(), FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("communities").child(intent.getStringExtra("community")),CDB);
-        else CommunityDB.toCommunityDB(getApplicationContext(), FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("communities").child("rand"),CDB);
+        if(intent.hasExtra("community")) currentCommunityRef = FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("communities").child(intent.getStringExtra("community"));
+        else currentCommunityRef = FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("communities").child("amits community");
+        CommunityDB.toCommunityDB(getApplicationContext(), currentCommunityRef,CDB);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(postsLayout.getContext(), DividerItemDecoration.VERTICAL);
         dividerItemDecoration.setDrawable(getDrawable(R.drawable.divider));
         postsLayout.addItemDecoration(dividerItemDecoration);
@@ -94,30 +107,68 @@ public class Community extends AppCompatActivity implements View.OnClickListener
         Global.community = currentCommunity;
 
     }
+    private static void renderFollowButton(){
+        if(isFollowing){
+            followButton.setBackgroundColor(Color.GRAY);
+            followButton.setText("unfollow");
+        }else{
+            followButton.setBackgroundColor(Color.RED);
+            followButton.setText("follow");
+        }
+    }
     public static void initFollowersAndAdmins(){
         TextView temp;
         followersLayout.removeAllViews();
-        if(currentCommunity.followers.size()!=0){
-            for (User follower : currentCommunity.followers.values()) {
-                temp =  new TextView(currentCommunity.context);
-                temp.setText(follower.username);
-                temp.setGravity(View.TEXT_ALIGNMENT_CENTER);
-                followersLayout.addView(temp);
+        String[] keys = currentCommunity.followers.keySet().toArray(new String[0]);
+        User[] users = currentCommunity.followers.values().toArray(new User[0]);
+        for(int i=0;i<keys.length;i++){
+            temp =  new TextView(currentCommunity.context);
+            temp.setText(users[i].username);
+            temp.setGravity(View.TEXT_ALIGNMENT_CENTER);
+            followersLayout.addView(temp);
+            if(keys[i].equals(Global.userRef.getKey())){
+                isFollowing=true;
+                renderFollowButton();
             }
         }
+
         adminsLayout.removeAllViews();
-        if(currentCommunity.admins.size()!=0){
-            for (User admin : currentCommunity.admins.values()) {
-                temp =  new TextView(currentCommunity.context);
-                temp.setText(admin.username);
-                adminsLayout.addView(temp);
+        keys = currentCommunity.admins.keySet().toArray(new String[0]);
+        users = currentCommunity.admins.values().toArray(new User[0]);
+        for(int i=0;i<keys.length;i++){
+            temp =  new TextView(currentCommunity.context);
+            temp.setText(users[i].username);
+            adminsLayout.addView(temp);
+            if(keys[i].equals(Global.userRef.getKey())){
+                isOwner=true;
+                activityLayout.removeView(followButton);
             }
         }
     }
 
     @Override
     public void onClick(View v) {
-        Intent sendIntent = new Intent(getApplicationContext(), PostsCreation.class);
-        startActivity(sendIntent);
+        if(v.getId()==postCreation.getId()){
+            Intent sendIntent = new Intent(getApplicationContext(), PostsCreation.class);
+            startActivity(sendIntent);
+        } else if (v.getId()==followButton.getId()) {
+            if(isFollowing){
+                currentCommunityRef.child("followers").child(Global.userRef.getKey()).removeValue();
+                FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app").getReference().child("/users_to_communities").child(Global.userRef.getKey()).child("followed").child(currentCommunityRef.getKey()).removeValue();
+                for (int i=0;i<followersLayout.getChildCount();i++){
+                    if(((TextView)followersLayout.getChildAt(i)).getText().equals(Global.user.username))followersLayout.removeViewAt(i);
+                }
+            }else {
+                currentCommunityRef.child("followers").child(Global.userRef.getKey()).setValue("");
+                FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app").getReference().child("/users_to_communities").child(Global.userRef.getKey()).child("followed").child(currentCommunityRef.getKey()).setValue("");
+                TextView temp =  new TextView(currentCommunity.context);
+                temp.setText(Global.user.username);
+                temp.setGravity(View.TEXT_ALIGNMENT_CENTER);
+                followersLayout.addView(temp);
+            }
+            isFollowing=!isFollowing;
+            renderFollowButton();
+        }
+
     }
 }

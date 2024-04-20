@@ -1,52 +1,38 @@
 package com.example.firebase.adaptor;
 
-import static androidx.appcompat.content.res.AppCompatResources.getDrawable;
-import static com.example.firebase.ui.activitys.Community.initFollowersAndAdmins;
-import static com.example.firebase.util.toast;
-
 import android.content.Context;
-import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.firebase.R;
-import com.example.firebase.objects.ImageDB;
 import com.example.firebase.objects.Post;
 import com.example.firebase.objects.User;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.api.BackendOrBuilder;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.ListResult;
-import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
-import com.google.gson.internal.LinkedTreeMap;
-import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-public class PostAdaptor extends RecyclerView.Adapter<PostAdaptor.ViewHolder> {
+public class PostAdaptorTest extends RecyclerView.Adapter<PostAdaptorTest.ViewHolder> {
     private List<Post> data;
     private Context context;
+    private Boolean isOwner;
+    private View.OnClickListener onClickListener;
 
-    public PostAdaptor(List<Post> data, Context context) {
+    public PostAdaptorTest(List<Post> data, Context context, boolean isOwner, View.OnClickListener onClickListener) {
         this.data = data;
         this.context = context;
+        this.isOwner=isOwner;
+        this.onClickListener=onClickListener;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -80,6 +66,8 @@ public class PostAdaptor extends RecyclerView.Adapter<PostAdaptor.ViewHolder> {
         holder.content.setText(post.getContent());
         initUser(post.getPoster(),holder);
         initImages(post,holder);
+        if(isOwner)holder.trashCan.setOnClickListener(onClickListener);
+        else holder.trashCan.setVisibility(View.INVISIBLE);
     }
 
     @Override

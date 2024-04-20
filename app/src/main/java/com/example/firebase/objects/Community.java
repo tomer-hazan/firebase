@@ -92,7 +92,7 @@ public class Community {
             }
         });
     }
-    private void toUsers(HashMap<String,String> usersList, HashMap<String,User> Users){
+    private void toUsers(HashMap<String,String> usersList, HashMap<String,User> users){
         for (String user : usersList.keySet()) {
             FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("users").child(user)
                     .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -101,7 +101,7 @@ public class Community {
                             String json = new Gson().toJson(snapshot.getValue());
                             LinkedTreeMap<String, String> newUser = (LinkedTreeMap<String, String>)new Gson().fromJson(json, Object.class);
                             User tempUser = new User(newUser.get("username"),newUser.get("email"),newUser.get("password"));
-                            Users.put(user,tempUser);
+                            users.put(user,tempUser);
                             initFollowersAndAdmins();//toDO this func runs on every user (follower or admin) make it run only when all the users arrived
                         }
 

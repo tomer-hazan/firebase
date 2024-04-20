@@ -8,6 +8,58 @@
 
 
     <TextView
+        android:id="@+id/text6"
+        android:layout_width="378dp"
+        android:layout_height="61dp"
+        android:gravity="center"
+        android:text="more communities"
+        android:textSize="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.484"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ownedCommunities"
+        app:layout_constraintVertical_bias="0.715" />
+
+    <ScrollView
+        android:id="@+id/followedCommunities"
+        android:layout_width="413dp"
+        android:layout_height="110dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/text"
+        app:layout_constraintVertical_bias="0.756">
+
+        <LinearLayout
+            android:id="@+id/followedCommunitiesLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+        </LinearLayout>
+    </ScrollView>
+
+    <ScrollView
+        android:id="@+id/ownedCommunities"
+        android:layout_width="409dp"
+        android:layout_height="126dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/text"
+        app:layout_constraintVertical_bias="0.415">
+
+        <LinearLayout
+            android:id="@+id/ownedCommunitiesLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
+
+    <TextView
         android:id="@+id/text"
         android:layout_width="420dp"
         android:layout_height="94dp"
@@ -25,20 +77,36 @@
         android:id="@+id/text3"
         android:layout_width="378dp"
         android:layout_height="61dp"
+        android:layout_marginTop="152dp"
         android:gravity="center"
         android:text="community's list"
         android:textSize="50dp"
         app:layout_constraintBottom_toTopOf="@+id/scrollView2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintHorizontal_bias="0.484"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.893" />
+        app:layout_constraintVertical_bias="0.298" />
+
+    <TextView
+        android:id="@+id/text4"
+        android:layout_width="378dp"
+        android:layout_height="61dp"
+        android:layout_marginTop="200dp"
+        android:gravity="center"
+        android:text="your communities"
+        android:textSize="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.515"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.352" />
 
     <ScrollView
-        android:id="@+id/scrollView2"
-        android:layout_width="411dp"
-        android:layout_height="458dp"
+        android:id="@+id/moreCommunities"
+        android:layout_width="424dp"
+        android:layout_height="83dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -47,7 +115,7 @@
         app:layout_constraintVertical_bias="1.0">
 
         <LinearLayout
-            android:id="@+id/CommunitiesLayout"
+            android:id="@+id/moreCommunitiesLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" />
@@ -59,11 +127,25 @@
         android:layout_height="53dp"
         android:text="create a new community"
         android:textSize="25dp"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.47"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/text"
-        app:layout_constraintVertical_bias="0.513" />
+        app:layout_constraintVertical_bias="0.138" />
+
+    <TextView
+        android:id="@+id/text5"
+        android:layout_width="378dp"
+        android:layout_height="61dp"
+        android:gravity="center"
+        android:text="followed communities"
+        android:textSize="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.242"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ownedCommunities"
+        app:layout_constraintVertical_bias="0.075" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

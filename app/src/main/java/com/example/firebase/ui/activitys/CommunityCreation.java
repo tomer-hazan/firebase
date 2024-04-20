@@ -99,6 +99,11 @@ public class CommunityCreation extends AppCompatActivity implements View.OnClick
         CDB = new CommunityDB(name.getText().toString(),followers,admins,new Location(Double.valueOf( longitude.getText().toString()),Double.valueOf( latitude.getText().toString())),Integer.valueOf( radius.getText().toString()));
         DatabaseReference communityRef = myRef.push();
         communityRef.setValue(CDB);
+        try {
+            DatabaseReference userToCommunitie = FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("users_to_communities/"+userRef);
+            userToCommunitie.child("owned").child(communityRef.getKey()).setValue("");
+            userToCommunitie.child("followed").child(communityRef.getKey()).setValue("");
+        }catch (Exception e){}
         toast("uploaded successfully");
         return communityRef;
     }
@@ -115,6 +120,8 @@ public class CommunityCreation extends AppCompatActivity implements View.OnClick
                 }
                 else{
                     uploadCommunity();
+                    Intent sendIntent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(sendIntent);
                 }
 
             }

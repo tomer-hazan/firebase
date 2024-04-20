@@ -1,9 +1,6 @@
 package com.example.firebase.ui.activitys;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -13,10 +10,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 
 import com.example.firebase.Global;
 import com.example.firebase.R;
+import com.example.firebase.objects.CommunityDB;
 import com.example.firebase.objects.Location;
 import com.example.firebase.objects.User;
 import com.google.android.gms.common.api.ApiException;
@@ -31,11 +28,9 @@ import com.google.android.gms.location.LocationRequest;
 
 import android.os.Bundle;
 import android.os.Looper;
-import android.provider.MediaStore;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,13 +46,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 
-import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import android.Manifest;
@@ -69,7 +62,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     TextView tv;
     Map<String, TextView> communities;
-    LinearLayout linearLayout;
+    LinearLayout moreCommunitiesLayout;
+    LinearLayout followedCommunitiesLayout;
+    LinearLayout ownedCommunitiesLayout;
     private LocationRequest locationRequest;
     Button communityBtn;
     CameraManager cameraManager;
@@ -99,7 +94,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (!arePermissionsGranted(GPS_PERMISSIONS))
             ActivityCompat.requestPermissions(this, GPS_PERMISSIONS, MY_PERMISSIONS_REQUEST_LOCATION);
         tv = findViewById(R.id.text);
-        linearLayout = findViewById(R.id.CommunitiesLayout);
+        moreCommunitiesLayout = findViewById(R.id.moreCommunitiesLayout);
+        ownedCommunitiesLayout = findViewById(R.id.ownedCommunitiesLayout);
+        followedCommunitiesLayout = findViewById(R.id.followedCommunitiesLayout);
         communityBtn = findViewById(R.id.community);
         locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -108,6 +105,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getGPS();
         getUserIfNull();
         communityBtn.setOnClickListener(this::onClick);
+        getOtherCommunities();
+        getOwnedCommunities();
+        getFollowedCommunities();
         //getRecomendedCommunities();
 
 
@@ -147,11 +147,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(sendIntent);
         } else if (view.getClass().equals(TextView.class)) {
             Intent sendIntent = new Intent(this, Community.class);
-            String rightCommunityRef;
             String[] CommunityRefArr = communities.keySet().toArray(new String[0]);
             TextView[] tvArr =  communities.values().toArray(new TextView[0]);
             for(int i=0;i<tvArr.length;i++){
-                if(tvArr[i].equals(view)){
+                if(((TextView)view).getText().equals(tvArr[i].getText())){
                     sendIntent.putExtra("community",CommunityRefArr[i]);
                     startActivity(sendIntent);
                 }
@@ -174,7 +173,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             LocationServices.getFusedLocationProviderClient(MainActivity.this)
                                     .removeLocationUpdates(this);
                             if (locationResult!=null &&locationResult.getLocations().size()>0)location = new Location(locationResult.getLocations().get(locationResult.getLocations().size()-1).getLongitude(), locationResult.getLocations().get(locationResult.getLocations().size()-1).getLatitude());
-                            getRecomendedCommunities();
                         }
                     }, Looper.getMainLooper());
 
@@ -239,8 +237,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 
-    private void getRecomendedCommunities() {
-        linearLayout.removeAllViews();
+    private void getOtherCommunities() {
+        moreCommunitiesLayout.removeAllViews();
         DatabaseReference commRef = FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("communities");
 //        Query query = commRef.child("gpslocation").orderByChild("latitude").startAt(location.getMinLatBound(maxDistance)).endAt(location.getMaxLatBound(maxDistance)).orderByChild("longitude").startAt(location.getMinLonBound(maxDistance)).endAt(location.getMaxLonBound(maxDistance));
         Query query = commRef.orderByChild("name")
@@ -261,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     tempTV.setGravity(Gravity.CENTER);
                     tempTV.setPadding(0,50,0,0);
                     communities.put(communitiesRefArry[i],tempTV);
-                    linearLayout.addView(tempTV);
+                    moreCommunitiesLayout.addView(tempTV);
                 }
             }
             @Override
@@ -270,6 +268,135 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
     }
+    private void getRecommendedCommunities() {
+        moreCommunitiesLayout.removeAllViews();
+        DatabaseReference commRef = FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("communities");
+//        Query query = commRef.child("gpslocation").orderByChild("latitude").startAt(location.getMinLatBound(maxDistance)).endAt(location.getMaxLatBound(maxDistance)).orderByChild("longitude").startAt(location.getMinLonBound(maxDistance)).endAt(location.getMaxLonBound(maxDistance));
+        Query query = commRef.orderByChild("name")
+                .limitToFirst(100);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                query.removeEventListener(this);
+                TextView tempTV;
+                Map<String, Map<String,String>> tempCommunities = (Map<String, Map<String,String>>)dataSnapshot.getValue();
+                String[] communitiesRefArry =  tempCommunities.keySet().toArray(new String[0]);
+                Map<String,String>[] communitiesArry = tempCommunities.values().toArray(new Map[0]);
+                for(int i=0;i<communitiesArry.length;i++){
+                    tempTV =new TextView(getApplicationContext());
+                    tempTV.setOnClickListener(MainActivity.this::onClick);
+                    tempTV.setText(communitiesArry[i].get("name"));
+                    tempTV.setTextSize(25);
+                    tempTV.setGravity(Gravity.CENTER);
+                    tempTV.setPadding(0,50,0,0);
+                    communities.put(communitiesRefArry[i],tempTV);
+                    moreCommunitiesLayout.addView(tempTV);
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                toast("The read failed: " + databaseError.getCode());
+            }
+        });
+    }
+
+    private void getFollowedCommunities(){
+        final String[] ret = new String[]{};
+        try {
+            Query query =  FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("users_to_communities/"+Global.userRef.getKey()+"/followed").orderByKey();
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.getValue()==null)return;
+                    String[] temp =(String[]) ((HashMap)snapshot.getValue()).keySet().toArray(new String[0]);
+                    for (int i=0;i<temp.length;i++){
+                        int finalI = i;
+                        FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("communities/"+temp[i]).orderByValue().addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                Map<String,String> community = (Map<String,String>)snapshot.getValue();
+                                if(community==null){
+                                    toast("invalid followed community");
+                                    return;
+                                }
+                                query.removeEventListener(this);
+                                TextView tempTV;
+
+                                tempTV =new TextView(getApplicationContext());
+                                tempTV.setOnClickListener(MainActivity.this::onClick);
+                                tempTV.setText(community.get("name"));
+                                tempTV.setTextSize(25);
+                                tempTV.setGravity(Gravity.CENTER);
+                                tempTV.setPadding(0,50,0,0);
+                                communities.put(temp[finalI],tempTV);
+                                followedCommunitiesLayout.addView(tempTV);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }catch (Error e){}
+    }
+
+    private void getOwnedCommunities(){
+        final String[] ret = new String[]{};
+        try {
+            Query query =  FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("users_to_communities/"+Global.userRef.getKey()+"/owned").orderByKey();
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.getValue()==null)return;
+                    String[] temp = (String[]) ((HashMap)snapshot.getValue()).keySet().toArray(new String[0]);
+                    for (int i=0;i<temp.length;i++){
+                        int finalI = i;
+                        FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("communities/"+temp[i]).orderByChild("name").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                Map<String,String> community = (Map<String,String>)snapshot.getValue();
+                                if(community==null){
+                                    toast("invalid owned community");
+                                    return;
+                                }
+                                query.removeEventListener(this);
+                                TextView tempTV;
+                                tempTV =new TextView(getApplicationContext());
+                                tempTV.setOnClickListener(MainActivity.this::onClick);
+                                tempTV.setText(community.get("name"));
+                                tempTV.setTextSize(25);
+                                tempTV.setGravity(Gravity.CENTER);
+                                tempTV.setPadding(0,50,0,0);
+                                communities.put(temp[finalI],tempTV);
+                                ownedCommunitiesLayout.addView(tempTV);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }catch (Error e){}
+    }
+
 
     private boolean arePermissionsGranted(String[] neededPermissions) {
         for (String permission : neededPermissions) {
