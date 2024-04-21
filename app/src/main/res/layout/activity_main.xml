@@ -18,45 +18,27 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.484"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ownedCommunities"
-        app:layout_constraintVertical_bias="0.715" />
+        app:layout_constraintTop_toBottomOf="@+id/followedCommunities"
+        app:layout_constraintVertical_bias="0.18" />
 
     <ScrollView
         android:id="@+id/followedCommunities"
-        android:layout_width="413dp"
-        android:layout_height="110dp"
+        android:layout_width="319dp"
+        android:layout_height="140dp"
+        android:background="@drawable/small_border"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/text"
-        app:layout_constraintVertical_bias="0.756">
+        app:layout_constraintTop_toBottomOf="@+id/text5"
+        app:layout_constraintVertical_bias="0.0">
 
         <LinearLayout
             android:id="@+id/followedCommunitiesLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
         </LinearLayout>
-    </ScrollView>
-
-    <ScrollView
-        android:id="@+id/ownedCommunities"
-        android:layout_width="409dp"
-        android:layout_height="126dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/text"
-        app:layout_constraintVertical_bias="0.415">
-
-        <LinearLayout
-            android:id="@+id/ownedCommunitiesLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" />
     </ScrollView>
 
     <TextView
@@ -71,48 +53,66 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.002" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/text3"
         android:layout_width="378dp"
         android:layout_height="61dp"
-        android:layout_marginTop="152dp"
+        android:layout_marginTop="13dp"
         android:gravity="center"
         android:text="community's list"
-        android:textSize="50dp"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.484"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.298" />
-
-    <TextView
-        android:id="@+id/text4"
-        android:layout_width="378dp"
-        android:layout_height="61dp"
-        android:layout_marginTop="200dp"
-        android:gravity="center"
-        android:text="your communities"
-        android:textSize="30dp"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
+        android:textSize="45dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.515"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.352" />
+        app:layout_constraintTop_toBottomOf="@+id/community"
+        app:layout_constraintVertical_bias="0.005" />
+
+    <ScrollView
+        android:id="@+id/ownedCommunities"
+        android:layout_width="319dp"
+        android:layout_height="140dp"
+        android:background="@drawable/small_border"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text4"
+        app:layout_constraintVertical_bias="0.0">
+
+        <LinearLayout
+            android:id="@+id/ownedCommunitiesLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/text4"
+        android:layout_width="376dp"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:text="your communities"
+        android:textSize="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.727"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text3"
+        app:layout_constraintVertical_bias="0.0" />
 
     <ScrollView
         android:id="@+id/moreCommunities"
-        android:layout_width="424dp"
-        android:layout_height="83dp"
+        android:layout_width="319dp"
+        android:layout_height="140dp"
+        android:background="@drawable/small_border"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/text"
-        app:layout_constraintVertical_bias="1.0">
+        app:layout_constraintTop_toBottomOf="@+id/text6"
+        app:layout_constraintVertical_bias="0.0">
 
         <LinearLayout
             android:id="@+id/moreCommunitiesLayout"
@@ -131,13 +131,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.47"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/text"
-        app:layout_constraintVertical_bias="0.138" />
+        app:layout_constraintTop_toBottomOf="@+id/text"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/text5"
-        android:layout_width="378dp"
-        android:layout_height="61dp"
+        android:layout_width="376dp"
+        android:layout_height="51dp"
         android:gravity="center"
         android:text="followed communities"
         android:textSize="30dp"

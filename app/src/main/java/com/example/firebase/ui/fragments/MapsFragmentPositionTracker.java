@@ -59,6 +59,7 @@ public class MapsFragmentPositionTracker extends Fragment implements LocationLis
     private static GoogleMap googleMap;
     private LocationManager locationManager;
     View.OnClickListener onClickListener;
+    private double radius;
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
         /**
@@ -81,8 +82,9 @@ public class MapsFragmentPositionTracker extends Fragment implements LocationLis
 
         }
     };
-    public MapsFragmentPositionTracker(View.OnClickListener oc){
+    public MapsFragmentPositionTracker(View.OnClickListener oc,double radius){
         this.onClickListener = oc;
+        this.radius=radius;
     }
     private void GPS(GoogleMap googleMap){
         LocationRequest locationRequest = LocationRequest.create();
@@ -109,6 +111,7 @@ public class MapsFragmentPositionTracker extends Fragment implements LocationLis
                             }
                             myPos = new LatLng(latitude.get(),longitude.get());
                             googleMap.moveCamera(CameraUpdateFactory.newLatLng(myPos));
+                            //googleMap.moveCamera(CameraUpdateFactory.zoomTo(googleMap.getCameraPosition().zoom*1.5*()));
                             toast("GPSlocation: (long,lat) ("+longitude.get()+", "+latitude.get()+")");
                         }
                     }, Looper.getMainLooper());

@@ -120,7 +120,7 @@ public class CommunityCreationMapsFragment extends Fragment{
                             }
                             myPos = new LatLng(latitude.get(),longitude.get());
                             googleMap.moveCamera(CameraUpdateFactory.newLatLng(myPos));
-                            googleMap.animateCamera( CameraUpdateFactory.zoomTo( 17.0f ) );
+                            googleMap.animateCamera( CameraUpdateFactory.zoomTo( 7.0f ) );
                             toast("GPSlocation: (long,lat) ("+longitude.get()+", "+latitude.get()+")");
                             CommunityCreation.setGPSCords(latitude.get(),longitude.get(),onClickListener);
                         }
@@ -229,5 +229,10 @@ public class CommunityCreationMapsFragment extends Fragment{
         // Border width of the circle
         circleOptions.strokeWidth(2);
         // Adding the circle to the GoogleMap
-        mapCircle = googleMap.addCircle(circleOptions);}
+        mapCircle = googleMap.addCircle(circleOptions);
+    }
+    public void zoom(int radius){
+        float zoomVal = (float) (23 -Math.log(radius)/Math.log(2));
+        googleMap.animateCamera( CameraUpdateFactory.zoomTo(zoomVal));
+    }
 }

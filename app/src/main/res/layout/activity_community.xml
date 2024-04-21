@@ -9,41 +9,10 @@
     android:id="@+id/layoutID">
 
 
-        <TextView
-            android:id="@+id/name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="TextView"
-            app:layout_constraintBottom_toTopOf="@+id/postsRecycleView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
-
-        <ScrollView
-            android:id="@+id/scrollView3"
-            android:layout_width="214dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="4dp"
-            app:layout_constraintBottom_toTopOf="@+id/postsRecycleView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/name"
-            app:layout_constraintVertical_bias="0.285">
-
-                <LinearLayout
-                    android:id="@+id/followers"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical" />
-        </ScrollView>
-
         <FrameLayout
             android:id="@+id/fragment_maps"
-            android:layout_width="match_parent"
-            android:layout_height="152dp"
+            android:layout_width="415dp"
+            android:layout_height="169dp"
             android:layout_alignParentBottom="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -52,58 +21,85 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/postsRecycleView"
-            android:layout_width="314dp"
-            android:layout_height="408dp"
-            android:layout_marginTop="120dp"
-            app:layout_constraintBottom_toTopOf="@+id/fragment_maps"
+            android:layout_width="324dp"
+            android:layout_height="498dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.495"
+            app:layout_constraintHorizontal_bias="0.493"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0"></androidx.recyclerview.widget.RecyclerView>
-
-        <ScrollView
-            android:id="@+id/scrollView4"
-            android:layout_width="193dp"
-            android:layout_height="45dp"
-            android:layout_marginTop="2dp"
-            app:layout_constraintBottom_toTopOf="@+id/postsRecycleView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/scrollView3"
-            app:layout_constraintTop_toBottomOf="@+id/name"
-            app:layout_constraintVertical_bias="0.296">
-
-                <LinearLayout
-                    android:id="@+id/admins"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_gravity="center"
-                    android:paddingBottom="50dp"/>
-        </ScrollView>
-
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="3dp"
-            android:text="FOLLOWERS"
-            app:layout_constraintBottom_toTopOf="@+id/scrollView3"
-            app:layout_constraintEnd_toStartOf="@+id/name"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintVertical_bias="0.444"></androidx.recyclerview.widget.RecyclerView>
 
         <TextView
             android:id="@+id/textView4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="1dp"
             android:text="ADMINS"
             app:layout_constraintBottom_toTopOf="@+id/scrollView4"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/name"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintHorizontal_bias="0.402"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.9" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginBottom="3dp"
+            android:text="FOLLOWERS"
+            app:layout_constraintBottom_toTopOf="@+id/scrollView3"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.982" />
+
+        <ScrollView
+            android:id="@+id/scrollView3"
+            android:layout_width="95dp"
+            android:layout_height="79dp"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/small_border"
+            app:layout_constraintBottom_toTopOf="@+id/postsRecycleView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.05"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/name"
+            app:layout_constraintVertical_bias="0.041">
+
+                <LinearLayout
+                    android:id="@+id/followers"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+        </ScrollView>
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="412dp"
+            android:layout_height="74dp"
+            android:gravity="center"
+            android:text="TextView"
+            android:textSize="50dp"
+            app:layout_constraintBottom_toTopOf="@+id/postsRecycleView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <Button
+            android:id="@+id/followButton"
+            android:layout_width="120dp"
+            android:layout_height="44dp"
+            android:backgroundTint="@android:color/holo_red_dark"
+            android:text="follow"
+            app:layout_constraintBottom_toTopOf="@+id/postsRecycleView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.872"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/postCreation"
+            app:layout_constraintVertical_bias="0.0" />
 
         <Button
             android:id="@+id/postCreation"
@@ -112,21 +108,29 @@
             android:text="create post"
             app:layout_constraintBottom_toTopOf="@+id/postsRecycleView"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.192"
+            app:layout_constraintHorizontal_bias="0.872"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/scrollView3"
-            app:layout_constraintVertical_bias="0.521" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.531" />
 
-        <Button
-            android:id="@+id/followButton"
-            android:layout_width="109dp"
-            android:layout_height="46dp"
-            android:text="follow"
-            android:backgroundTint="@android:color/holo_red_dark"
+        <ScrollView
+            android:id="@+id/scrollView4"
+            android:layout_width="95dp"
+            android:layout_height="79dp"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/small_border"
             app:layout_constraintBottom_toTopOf="@+id/postsRecycleView"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.831"
+            app:layout_constraintHorizontal_bias="0.408"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/scrollView3"
-            app:layout_constraintVertical_bias="0.521" />
+            app:layout_constraintTop_toBottomOf="@+id/name"
+            app:layout_constraintVertical_bias="0.041">
+
+                <LinearLayout
+                    android:id="@+id/admins"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+        </ScrollView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

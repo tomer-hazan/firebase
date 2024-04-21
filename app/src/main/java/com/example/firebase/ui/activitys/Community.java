@@ -138,6 +138,7 @@ public class Community extends AppCompatActivity implements View.OnClickListener
         for(int i=0;i<keys.length;i++){
             temp =  new TextView(currentCommunity.context);
             temp.setText(users[i].username);
+            temp.setGravity(View.TEXT_ALIGNMENT_CENTER);
             adminsLayout.addView(temp);
             if(keys[i].equals(Global.userRef.getKey())){
                 isOwner=true;

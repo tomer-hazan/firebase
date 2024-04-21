@@ -34,7 +34,8 @@ public class CommunityMapsFragment extends Fragment {
             LatLng communityPos = new LatLng(location.getLatitude() , location.getLongitude());
             map.addMarker(new MarkerOptions().position(communityPos));
             drawCircle(communityPos);
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(communityPos, 20f));
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(communityPos, (float) (23 -Math.log(radius)/Math.log(2))));
+
         }
 
     }

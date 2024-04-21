@@ -26,7 +26,6 @@ import com.example.firebase.objects.Location;
 import com.example.firebase.objects.User;
 import com.example.firebase.ui.fragments.CommunityCreationMapsFragment;
 import com.example.firebase.ui.fragments.CommunityMapsFragment;
-import com.example.firebase.ui.fragments.MapsFragmentPositionTracker;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -110,6 +109,12 @@ public class CommunityCreation extends AppCompatActivity implements View.OnClick
 
     @Override
     public void onClick(View v) {
+        try {
+            Integer.valueOf( radius.getText().toString());
+        }catch (Exception e){
+            toast("invalid community radius");
+            return;
+        }
         Query query = myRef.orderByChild("name").equalTo(name.getText().toString());
         query.addValueEventListener(new ValueEventListener() {
             @Override
@@ -161,6 +166,7 @@ public class CommunityCreation extends AppCompatActivity implements View.OnClick
             return;
         }
         myFragment.drawCircle(new LatLng(lat,lon),r);
+        myFragment.zoom(r);
 
     }
 
