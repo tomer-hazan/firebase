@@ -51,7 +51,7 @@
             android:name=".ui.activitys.Community"
             android:exported="false" />
         <activity
-            android:name=".ui.activitys.SignIn"
+            android:name=".ui.activitys.SignUp"
             android:exported="false" />
         <activity
             android:name=".ui.activitys.postsActivity"

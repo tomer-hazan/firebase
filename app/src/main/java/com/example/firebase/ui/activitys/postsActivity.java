@@ -43,7 +43,7 @@ public class postsActivity extends AppCompatActivity {
 
     }
     private void initPosts(List<Post> posts){
-        PostAdaptor adapter = new PostAdaptor(posts,this.getApplicationContext());
+        PostAdaptor adapter = new PostAdaptor(posts,this.getApplicationContext(),false);
         recyclerView.setAdapter(adapter);
     }
     private void getPosts(){

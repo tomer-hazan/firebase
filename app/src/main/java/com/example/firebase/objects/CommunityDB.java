@@ -56,7 +56,7 @@ public class CommunityDB {
 //                    }
 //                });
 //    }
-    public static void toCommunityDB(Context context, DatabaseReference community, CommunityDB CDB){
+    public static void createCommunityDB(Context context, DatabaseReference community, CommunityDB CDB){
         community
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override

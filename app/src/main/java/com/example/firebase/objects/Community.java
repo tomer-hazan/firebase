@@ -27,7 +27,6 @@ import java.util.function.Supplier;
 public class Community {
     public HashMap<String,User> followers;//the followers
     public HashMap<String,User> admins;//the admins
-    public List<ImageView> images;
     List<Post> posts;
 
     public Location GPSlocation;//the root gps gpslocation
@@ -74,9 +73,9 @@ public class Community {
                             PostDB pDB = (PostDB)snapshot.getValue(t);
                             pDB.setPostRef(snapshot.getRef());
                             pDB.setContext(context);
-                            Post p = new Post(pDB);
+                            Post p = new Post(pDB,communityRef);
                             posts.add(p);
-                            com.example.firebase.ui.activitys.Community.initPosts();
+                            //com.example.firebase.ui.activitys.Community.initPosts();
                         }
 
                         @Override
@@ -99,9 +98,8 @@ public class Community {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             String json = new Gson().toJson(snapshot.getValue());
-                            LinkedTreeMap<String, String> newUser = (LinkedTreeMap<String, String>)new Gson().fromJson(json, Object.class);
-                            User tempUser = new User(newUser.get("username"),newUser.get("email"),newUser.get("password"));
-                            users.put(user,tempUser);
+                            User newUser = new Gson().fromJson(json, User.class);
+                            users.put(user,newUser);
                             initFollowersAndAdmins();//toDO this func runs on every user (follower or admin) make it run only when all the users arrived
                         }
 

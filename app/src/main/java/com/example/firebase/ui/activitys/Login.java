@@ -1,7 +1,5 @@
 package com.example.firebase.ui.activitys;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -22,17 +20,12 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 public class Login extends AppCompatActivity implements View.OnClickListener {
 
     FirebaseDatabase database;
     DatabaseReference myRef;
 
-    Button signIn;
+    Button signUp;
     EditText name;
     EditText password;
     User me;
@@ -45,9 +38,9 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         name = findViewById(R.id.name);
         password =  findViewById(R.id.password);
         submit = findViewById(R.id.submit);
-        signIn = findViewById(R.id.signin);
+        signUp = findViewById(R.id.signUp);
         submit.setOnClickListener(this::onClick);
-        signIn.setOnClickListener(this::onClick);
+        signUp.setOnClickListener(this::onClick);
         database = FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/");
         myRef = database.getReference().child("users");
     }
@@ -72,11 +65,11 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                             }
                         }
                         if(!correctPassword){
-                            toast("wrong password, try again or if you want to create a new one, go to sign in");
+                            toast("wrong password, try again or if you want to create a new one, go to sign up");
                         }
                     }
                     else{
-                        toast("wrong user name, if you want to create a new one, go to sign in");
+                        toast("wrong user name, if you want to create a new one, go to sign up");
                     }
 
                 }
@@ -86,8 +79,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                 }
             });
         }
-        else if (v.getId()==signIn.getId()){
-            Intent sendIntent = new Intent(this, SignIn.class);
+        else if (v.getId()== signUp.getId()){
+            Intent sendIntent = new Intent(this, SignUp.class);
             startActivity(sendIntent);
         }
 

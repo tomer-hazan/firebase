@@ -11,17 +11,19 @@ public class User {
     public String email;
 
     public String password;
-
+    public String phoneNumber;
+    String refKey;
 
 
     public User() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public User(String username, String email, String password) {
+    public User(String username, String email, String password,String phoneNumber) {
         this.username = username;
         this.email = email;
         this.password = password;
+        this.phoneNumber=phoneNumber;
     }
 
     @Override
@@ -35,4 +37,6 @@ public class User {
         }
     }
 
+    public void setRefKey(String refKey){this.refKey=refKey;}
+    public String  getRefKey(){return refKey;}
 }

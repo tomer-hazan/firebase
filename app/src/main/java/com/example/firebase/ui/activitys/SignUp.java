@@ -22,9 +22,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
 
-public class SignIn extends AppCompatActivity implements View.OnClickListener {
+public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
     Button submit;
     Button login;
@@ -34,6 +33,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
     EditText name;
     EditText email;
     EditText password;
+    EditText phoneNumber;
     Intent Intent;
     Intent loginIntent;
 
@@ -42,7 +42,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.sign_in);
+        setContentView(R.layout.sign_up);
         submit = findViewById(R.id.submit);
         login = findViewById(R.id.LogIn);
         tv = findViewById(R.id.textView);
@@ -51,6 +51,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
         name = findViewById(R.id.editTextText);
         email = findViewById(R.id.editTextTextEmailAddress);
         password =  findViewById(R.id.editTextNumberPassword);
+        phoneNumber = findViewById(R.id.phoneNumber);
         i=0;
         FirebaseDatabase database = FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/");
         myRef = database.getReference("users");
@@ -96,10 +97,11 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
         });
     }
     public DatabaseReference uploadUser(){
-        User user = new User(name.getText().toString(),email.getText().toString(),password.getText().toString());
+        User user = new User(name.getText().toString(),email.getText().toString(),password.getText().toString(),phoneNumber.getText().toString());
         name.setText("");
         email.setText("");
         password.setText("");
+        phoneNumber.setText("");
         DatabaseReference userRef = myRef.push();
         userRef.setValue(user);
         return userRef;

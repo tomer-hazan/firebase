@@ -2,11 +2,8 @@ package com.example.firebase.ui.activitys;
 
 import static com.example.firebase.ui.fragments.CommunityMapsFragment.setPos;
 
-import static java.security.AccessController.getContext;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -15,32 +12,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.firebase.Global;
 import com.example.firebase.R;
-import com.example.firebase.VerticalSpaceItemDecoration;
 import com.example.firebase.adaptor.PostAdaptor;
 import com.example.firebase.objects.CommunityDB;
-import com.example.firebase.objects.Post;
 import com.example.firebase.objects.User;
 import com.example.firebase.ui.fragments.CommunityMapsFragment;
 import com.example.firebase.util;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Community extends AppCompatActivity implements View.OnClickListener {
     static com.example.firebase.objects.Community currentCommunity;
@@ -70,19 +56,21 @@ public class Community extends AppCompatActivity implements View.OnClickListener
         postCreation.setOnClickListener(this::onClick);
         followButton.setOnClickListener(this::onClick);
         CDB = new CommunityDB();
+        isFollowing=false;
+        isOwner=false;
 
         postsLayout.setLayoutManager(new LinearLayoutManager(this));
         createMapFragment();
         Intent intent = getIntent();
         if(intent.hasExtra("community")) currentCommunityRef = FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("communities").child(intent.getStringExtra("community"));
         else currentCommunityRef = FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("communities").child("amits community");
-        CommunityDB.toCommunityDB(getApplicationContext(), currentCommunityRef,CDB);
+        CommunityDB.createCommunityDB(getApplicationContext(), currentCommunityRef,CDB);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(postsLayout.getContext(), DividerItemDecoration.VERTICAL);
         dividerItemDecoration.setDrawable(getDrawable(R.drawable.divider));
         postsLayout.addItemDecoration(dividerItemDecoration);
     }
     public static void initPosts(){
-        PostAdaptor adapter = new PostAdaptor(currentCommunity.getPosts(), currentCommunity.context);
+        PostAdaptor adapter = new PostAdaptor(currentCommunity.getPosts(), currentCommunity.context,isOwner);
         postsLayout.setAdapter(adapter);
     }
 
@@ -144,6 +132,10 @@ public class Community extends AppCompatActivity implements View.OnClickListener
                 isOwner=true;
                 activityLayout.removeView(followButton);
             }
+        }
+        if(isOwner&&postsLayout.getAdapter()!=null){
+            ((PostAdaptor)postsLayout.getAdapter()).setOwnerTrue();
+            util.toast("owner", currentCommunity.context);
         }
     }
 
