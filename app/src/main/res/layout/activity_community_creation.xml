@@ -43,43 +43,71 @@
             app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
         <EditText
-            android:id="@+id/longitude"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:ems="10"
-            android:hint="Longitude"
-            android:inputType="number"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/latitude" />
-
-        <EditText
             android:id="@+id/radius"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            android:ems="10"
-            android:hint="Radius"
-            android:inputType="number"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/longitude" />
-
-        <EditText
-            android:id="@+id/latitude"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:ems="10"
-            android:hint="Latitude"
+            android:hint="Radius"
             android:inputType="number"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintHorizontal_bias="0.492"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/name" />
+
+        <TextView
+            android:id="@+id/latitude"
+            android:layout_width="110dp"
+            android:layout_height="28dp"
+            android:layout_marginTop="40dp"
+            android:ems="10"
+            android:hint="Latitude"
+            android:inputType="number"
+            app:layout_constraintBottom_toTopOf="@+id/submit"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.76"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/radius"
+            app:layout_constraintVertical_bias="0.048" />
+
+        <TextView
+            android:id="@+id/textViewLon"
+            android:layout_width="81dp"
+            android:layout_height="32dp"
+            android:text="Longitude:"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/longitude"
+            app:layout_constraintHorizontal_bias="0.628"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/radius"
+            app:layout_constraintVertical_bias="0.229" />
+
+        <TextView
+            android:id="@+id/longitude"
+            android:layout_width="110dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="8dp"
+            android:ems="10"
+            android:hint="Longitude"
+            android:inputType="number"
+            app:layout_constraintBottom_toTopOf="@+id/submit"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.76"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/latitude"
+            app:layout_constraintVertical_bias="0.23" />
+
+        <TextView
+            android:id="@+id/textViewLat"
+            android:layout_width="83dp"
+            android:layout_height="33dp"
+            android:text="Latitude:"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/latitude"
+            app:layout_constraintHorizontal_bias="0.636"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/radius"
+            app:layout_constraintVertical_bias="0.113" />
 
         <Button
             android:id="@+id/submit"

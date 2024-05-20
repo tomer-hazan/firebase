@@ -42,15 +42,14 @@ import java.util.HashMap;
 
 public class CommunityCreation extends AppCompatActivity implements View.OnClickListener, TextWatcher {
     static EditText name;
-    static EditText longitude;
-    static EditText latitude;
+    static TextView longitude;
+    static TextView latitude;
     static EditText radius;
     static Button submit;
     static CommunityDB CDB;
     DatabaseReference myRef;
     CommunityCreationMapsFragment myFragment;
     String userRef;
-    boolean sendToCommunityCreation;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,9 +108,12 @@ public class CommunityCreation extends AppCompatActivity implements View.OnClick
 
     @Override
     public void onClick(View v) {
+        radius.setTextColor(Color.BLACK);
+        name.setTextColor(Color.BLACK);
         try {
             Integer.valueOf( radius.getText().toString());
         }catch (Exception e){
+            radius.setTextColor(Color.RED);
             toast("invalid community radius");
             return;
         }
@@ -122,6 +124,7 @@ public class CommunityCreation extends AppCompatActivity implements View.OnClick
                 query.removeEventListener(this);
                 if (dataSnapshot.hasChildren()){
                     toast("this community name already exists, please choose another one");
+                    name.setTextColor(Color.RED);
                 }
                 else{
                     uploadCommunity();

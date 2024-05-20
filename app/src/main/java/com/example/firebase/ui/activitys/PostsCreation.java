@@ -50,18 +50,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-public class PostsCreation extends AppCompatActivity implements View.OnClickListener {//toDO allow in app adding of images to posts
+public class PostsCreation extends AppCompatActivity implements View.OnClickListener {
     static EditText title;
     static EditText content;
     static Button submit;
     LinearLayout imagesLayout;
     Button addImage;
     ActivityResultLauncher<Intent> cameraActivity;
-    static PostDB PDB;
     DatabaseReference communityRef;
     DatabaseReference postsRef;
     String userRef;
-    boolean sendToCommunityCreation;
     List imagesRefPath;
     private static final int REQUEST_CAMERA_PERMISSION = 1;
     CameraManager cameraManager;
@@ -92,7 +90,7 @@ public class PostsCreation extends AppCompatActivity implements View.OnClickList
     }
 
     public DatabaseReference uploadPost(){
-        PDB = new PostDB(Global.userRef.getKey(),title.getText().toString(),content.getText().toString(),imagesRefPath);
+        PostDB PDB = new PostDB(Global.userRef.getKey(),title.getText().toString(),content.getText().toString(),imagesRefPath);
         DatabaseReference postRef = postsRef.push();
         postRef.setValue(PDB);
         communityRef.child(postRef.getKey()).setValue("");

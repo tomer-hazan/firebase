@@ -58,7 +58,7 @@ public class postsActivity extends AppCompatActivity {
 //                    Post p = postSnapshot.getValue(Post.class);
 //                    p.setPostRef(postSnapshot.getRef());
 //                    posts.add(p);
-                    PostDB pDB = postSnapshot.getValue(PostDB.class);//toDO make sure that works
+                    PostDB pDB = postSnapshot.getValue(PostDB.class);
                     Post p = new Post(pDB);
                     p.setPostRef(postSnapshot.getRef());
                     posts.add(p);

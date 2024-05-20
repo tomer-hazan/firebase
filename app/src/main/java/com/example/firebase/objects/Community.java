@@ -35,13 +35,6 @@ public class Community {
     public Context context;
     public DatabaseReference communityRef;
     public Community(){}
-//   public Community(List<User> followers, List<User> admins, List<ImageView> images, Location gpslocation, Context context){
-//        this.admins = admins;
-//        this.followers = followers;
-//        this.images = images;
-//        this.gpslocation = gpslocation;
-//        this.context = context;
-//   }
     public Community(CommunityDB CDB){
         communityRef = CDB.communityRef;
         name = ()-> CDB.name;
@@ -100,7 +93,7 @@ public class Community {
                             String json = new Gson().toJson(snapshot.getValue());
                             User newUser = new Gson().fromJson(json, User.class);
                             users.put(user,newUser);
-                            initFollowersAndAdmins();//toDO this func runs on every user (follower or admin) make it run only when all the users arrived
+                            initFollowersAndAdmins();
                         }
 
                         @Override

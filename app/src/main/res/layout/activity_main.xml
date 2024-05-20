@@ -9,17 +9,50 @@
 
     <TextView
         android:id="@+id/text6"
-        android:layout_width="378dp"
-        android:layout_height="61dp"
+        android:layout_width="386dp"
+        android:layout_height="52dp"
         android:gravity="center"
-        android:text="more communities"
+        android:text="recommended communities"
         android:textSize="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.484"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/followedCommunities"
-        app:layout_constraintVertical_bias="0.18" />
+        app:layout_constraintVertical_bias="0.172" />
+
+    <ScrollView
+        android:id="@+id/recommendedCommunities"
+        android:layout_width="313dp"
+        android:layout_height="123dp"
+        android:background="@drawable/small_border"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text6"
+        app:layout_constraintVertical_bias="0.0">
+
+        <LinearLayout
+            android:id="@+id/recommendedCommunitiesLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="154dp"
+                android:layout_height="48dp"
+                android:gravity="center"
+                android:text="Loding..."
+                android:textSize="15dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.186"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/followedCommunities"
+                app:layout_constraintVertical_bias="0.172" />
+        </LinearLayout>
+    </ScrollView>
 
     <ScrollView
         android:id="@+id/followedCommunities"
@@ -102,24 +135,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text3"
         app:layout_constraintVertical_bias="0.0" />
-
-    <ScrollView
-        android:id="@+id/moreCommunities"
-        android:layout_width="319dp"
-        android:layout_height="140dp"
-        android:background="@drawable/small_border"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text6"
-        app:layout_constraintVertical_bias="0.0">
-
-        <LinearLayout
-            android:id="@+id/moreCommunitiesLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" />
-    </ScrollView>
 
     <Button
         android:id="@+id/community"

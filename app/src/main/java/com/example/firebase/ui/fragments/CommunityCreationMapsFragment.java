@@ -56,7 +56,6 @@ public class CommunityCreationMapsFragment extends Fragment{
     private Supplier<Double> latitude;
     private LatLng myPos;
     private static GoogleMap googleMap;
-    private LocationManager locationManager;
     View.OnClickListener onClickListener;
     Circle mapCircle;
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
@@ -72,9 +71,6 @@ public class CommunityCreationMapsFragment extends Fragment{
          */
         @Override
         public void onMapReady(GoogleMap googleMap) {
-            LatLng sydney = new LatLng(-34, 151);
-            googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
             CommunityCreationMapsFragment.googleMap = googleMap;
             GPS(googleMap);
             CircleOptions circleOptions = new CircleOptions();
@@ -119,8 +115,9 @@ public class CommunityCreationMapsFragment extends Fragment{
                                 longitude = () -> locationResult.getLocations().get(locationResult.getLocations().size()-1).getLongitude();
                             }
                             myPos = new LatLng(latitude.get(),longitude.get());
+                            googleMap.addMarker(new MarkerOptions().position(myPos));
                             googleMap.moveCamera(CameraUpdateFactory.newLatLng(myPos));
-                            googleMap.animateCamera( CameraUpdateFactory.zoomTo( 7.0f ) );
+                            googleMap.animateCamera( CameraUpdateFactory.zoomTo( 17.0f ) );
                             toast("GPSlocation: (long,lat) ("+longitude.get()+", "+latitude.get()+")");
                             CommunityCreation.setGPSCords(latitude.get(),longitude.get(),onClickListener);
                         }
@@ -232,6 +229,7 @@ public class CommunityCreationMapsFragment extends Fragment{
         mapCircle = googleMap.addCircle(circleOptions);
     }
     public void zoom(int radius){
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(myPos));
         float zoomVal = (float) (23 -Math.log(radius)/Math.log(2));
         googleMap.animateCamera( CameraUpdateFactory.zoomTo(zoomVal));
     }

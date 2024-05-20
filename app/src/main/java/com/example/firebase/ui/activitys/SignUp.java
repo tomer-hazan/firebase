@@ -2,10 +2,16 @@ package com.example.firebase.ui.activitys;
 
 //import static io.grpc.Context.LazyStorage.storage;
 
+import static com.example.firebase.util.toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
         import android.view.View;
 import android.widget.Button;
@@ -27,15 +33,11 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
     Button submit;
     Button login;
-    TextView tv;
-    FirebaseDatabase database;
     DatabaseReference myRef;
     EditText name;
     EditText email;
     EditText password;
     EditText phoneNumber;
-    Intent Intent;
-    Intent loginIntent;
 
     int i;
     @SuppressLint("MissingInflatedId")
@@ -45,7 +47,6 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
         setContentView(R.layout.sign_up);
         submit = findViewById(R.id.submit);
         login = findViewById(R.id.LogIn);
-        tv = findViewById(R.id.textView);
         submit.setOnClickListener(this::onClick);
         login.setOnClickListener(this::onClick);
         name = findViewById(R.id.editTextText);
@@ -56,12 +57,20 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
         FirebaseDatabase database = FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/");
         myRef = database.getReference("users");
 
+        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        boolean connected = (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED);
+        if(!connected) {
+            toast("you are not connected to the internet");
+            submit.setBackgroundColor(Color.GRAY);
+        }
 
     }
 
     @Override
     public void onClick(View v) {
         if (v.getId()==submit.getId()){
+            name.setTextColor(Color.BLACK);
             handleUploadUser();
 
         }
@@ -72,7 +81,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
     }
 
-    public void handleUploadUser(){
+    private void handleUploadUser(){
         Query query = myRef.orderByChild("username").equalTo(name.getText().toString());
         query.addValueEventListener(new ValueEventListener() {
 
@@ -81,6 +90,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                 query.removeEventListener(this);
                 if (dataSnapshot.hasChildren()){
                     toast("user name is taken");
+                    name.setTextColor(Color.RED);
 
                 } else{
                     Global.userRef = uploadUser();

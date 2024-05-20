@@ -1,13 +1,10 @@
 package com.example.firebase.adaptor;
 
-import static androidx.appcompat.content.res.AppCompatResources.getDrawable;
-import static com.example.firebase.ui.activitys.Community.initFollowersAndAdmins;
 import static com.example.firebase.util.toast;
 
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,45 +15,24 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.firebase.R;
-import com.example.firebase.objects.Image;
-import com.example.firebase.objects.ImageDB;
 import com.example.firebase.objects.Post;
 import com.example.firebase.objects.User;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.textview.MaterialTextView;
-import com.google.api.BackendOrBuilder;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.ListResult;
-import com.google.firebase.storage.StorageReference;
-import com.google.gson.Gson;
-import com.google.gson.internal.LinkedTreeMap;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class PostAdaptor extends RecyclerView.Adapter<PostAdaptor.ViewHolder> implements View.OnClickListener {
     private List<Post> data;
     private List<ViewHolder> postsHolders;
-    private List<View> viewsList;
     private Context context;
     private boolean isOwner=false;
-    private ViewGroup parent;
 
     public PostAdaptor(List<Post> data, Context context, boolean isOwner) {
         this.data = data;
         this.context = context;
         postsHolders= new ArrayList<>();
         this.isOwner=isOwner;
-        this.viewsList = new ArrayList<>();
     }
 
     @Override
@@ -113,8 +89,6 @@ public class PostAdaptor extends RecyclerView.Adapter<PostAdaptor.ViewHolder> im
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.post, parent, false);
-        viewsList.add(itemView);
-        this.parent=parent;
         return new ViewHolder(itemView);
     }
 

@@ -1,6 +1,5 @@
 package com.example.firebase.ui.activitys;
 
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -13,7 +12,6 @@ import android.content.pm.PackageManager;
 
 import com.example.firebase.Global;
 import com.example.firebase.R;
-import com.example.firebase.objects.CommunityDB;
 import com.example.firebase.objects.Location;
 import com.example.firebase.objects.User;
 import com.google.android.gms.common.api.ApiException;
@@ -22,7 +20,6 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationSettingsRequest;
 
-import android.hardware.camera2.CameraManager;
 import android.location.LocationManager;
 import com.google.android.gms.location.LocationRequest;
 
@@ -49,6 +46,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,18 +58,15 @@ import androidx.core.content.ContextCompat;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private double maxDistance = 500;
 
-    TextView tv;
     Map<String, TextView> communities;
-    LinearLayout moreCommunitiesLayout;
+    LinearLayout recommendedCommunitiesLayout;
     LinearLayout followedCommunitiesLayout;
     LinearLayout ownedCommunitiesLayout;
     private LocationRequest locationRequest;
+    Map<String,String> communitiesNameToRef;
     Button communityBtn;
-    CameraManager cameraManager;
-    Boolean haveCamera;
-    ActivityResultLauncher<Intent>  cameraActivity;
     private Location location;
-    private static final int REQUEST_CODE = 22;
+    Map<String,Location> locationMap;
     private static final int REQUEST_CAMERA_PERMISSION = 1;
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 123;
 
@@ -87,14 +82,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         communities = new HashMap<>();
         if (!arePermissionsGranted(CAMERA_PERMISSIONS))
             ActivityCompat.requestPermissions(this, CAMERA_PERMISSIONS, REQUEST_CAMERA_PERMISSION);
         if (!arePermissionsGranted(GPS_PERMISSIONS))
             ActivityCompat.requestPermissions(this, GPS_PERMISSIONS, MY_PERMISSIONS_REQUEST_LOCATION);
-        tv = findViewById(R.id.text);
-        moreCommunitiesLayout = findViewById(R.id.moreCommunitiesLayout);
+        recommendedCommunitiesLayout= findViewById(R.id.recommendedCommunitiesLayout);
         ownedCommunitiesLayout = findViewById(R.id.ownedCommunitiesLayout);
         followedCommunitiesLayout = findViewById(R.id.followedCommunitiesLayout);
         communityBtn = findViewById(R.id.community);
@@ -102,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationRequest.setInterval(5000);
         locationRequest.setFastestInterval(2000);
+        locationMap= new HashMap<>();
         getGPS();
         getUserIfNull();
         communityBtn.setOnClickListener(this::onClick);
@@ -150,9 +144,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             String[] CommunityRefArr = communities.keySet().toArray(new String[0]);
             TextView[] tvArr =  communities.values().toArray(new TextView[0]);
             for(int i=0;i<tvArr.length;i++){
-                if(((TextView)view).getText().equals(tvArr[i].getText())){
+                String comName = tvArr[i].getText().toString();
+                if(comName.contains("-"))comName=comName.substring(0,comName.indexOf("-")-1);
+
+                String viewName = ((TextView)view).getText().toString();
+                if(viewName.contains("-"))viewName = viewName.substring(0,viewName.indexOf("-")-1);
+
+                if(viewName.equals(comName)){
                     sendIntent.putExtra("community",CommunityRefArr[i]);
                     startActivity(sendIntent);
+                    break;
                 }
             }
 
@@ -172,7 +173,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                             LocationServices.getFusedLocationProviderClient(MainActivity.this)
                                     .removeLocationUpdates(this);
-                            if (locationResult!=null &&locationResult.getLocations().size()>0)location = new Location(locationResult.getLocations().get(locationResult.getLocations().size()-1).getLongitude(), locationResult.getLocations().get(locationResult.getLocations().size()-1).getLatitude());
+                            if (locationResult!=null &&locationResult.getLocations().size()>0){
+                                location = new Location(locationResult.getLocations().get(locationResult.getLocations().size()-1).getLongitude(), locationResult.getLocations().get(locationResult.getLocations().size()-1).getLatitude());
+                                getRecommendedCommunities();
+                            }
                         }
                     }, Looper.getMainLooper());
 
@@ -238,29 +242,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void getOtherCommunities() {
-        moreCommunitiesLayout.removeAllViews();
         DatabaseReference commRef = FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("communities");
 //        Query query = commRef.child("gpslocation").orderByChild("latitude").startAt(location.getMinLatBound(maxDistance)).endAt(location.getMaxLatBound(maxDistance)).orderByChild("longitude").startAt(location.getMinLonBound(maxDistance)).endAt(location.getMaxLonBound(maxDistance));
         Query query = commRef.orderByChild("name")
                 .limitToFirst(100);
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+        query.addListenerForSingleValueEvent(new ValueEventListener(){
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 query.removeEventListener(this);
                 TextView tempTV;
-                Map<String, Map<String,String>> tempCommunities = (Map<String, Map<String,String>>)dataSnapshot.getValue();
-                String[] communitiesRefArry =  tempCommunities.keySet().toArray(new String[0]);
-                Map<String,String>[] communitiesArry = tempCommunities.values().toArray(new Map[0]);
-                for(int i=0;i<communitiesArry.length;i++){
-                    tempTV =new TextView(getApplicationContext());
-                    tempTV.setOnClickListener(MainActivity.this::onClick);
-                    tempTV.setText(communitiesArry[i].get("name"));
-                    tempTV.setTextSize(25);
-                    tempTV.setGravity(Gravity.CENTER);
-                    tempTV.setPadding(0,50,0,0);
-                    communities.put(communitiesRefArry[i],tempTV);
-                    moreCommunitiesLayout.addView(tempTV);
+                Map<String, Map<String,Object>> tempCommunities = (Map<String, Map<String,Object>>)dataSnapshot.getValue();
+                communitiesNameToRef = new HashMap<>();
+                String[] refs = tempCommunities.keySet().toArray(new String[0]);
+                for (String ref: refs) {
+                    communitiesNameToRef.put(tempCommunities.get(ref).get("name").toString(),ref);
                 }
+                HashMap<String,Object>[] communitiesArry = tempCommunities.values().toArray(new HashMap[0]);
+                for(int i=0;i<communitiesArry.length;i++){
+                    Location temp = new Location(((HashMap<String,Double>)communitiesArry[i].get("gpslocation")).get("longitude"),((HashMap<String,Double>)communitiesArry[i].get("gpslocation")).get("latitude"));
+                    locationMap.put((String) communitiesArry[i].get("name"),temp);
+                }
+                getRecommendedCommunities();
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -268,36 +270,47 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
     }
+
     private void getRecommendedCommunities() {
-        moreCommunitiesLayout.removeAllViews();
-        DatabaseReference commRef = FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference("communities");
-//        Query query = commRef.child("gpslocation").orderByChild("latitude").startAt(location.getMinLatBound(maxDistance)).endAt(location.getMaxLatBound(maxDistance)).orderByChild("longitude").startAt(location.getMinLonBound(maxDistance)).endAt(location.getMaxLonBound(maxDistance));
-        Query query = commRef.orderByChild("name")
-                .limitToFirst(100);
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                query.removeEventListener(this);
-                TextView tempTV;
-                Map<String, Map<String,String>> tempCommunities = (Map<String, Map<String,String>>)dataSnapshot.getValue();
-                String[] communitiesRefArry =  tempCommunities.keySet().toArray(new String[0]);
-                Map<String,String>[] communitiesArry = tempCommunities.values().toArray(new Map[0]);
-                for(int i=0;i<communitiesArry.length;i++){
-                    tempTV =new TextView(getApplicationContext());
-                    tempTV.setOnClickListener(MainActivity.this::onClick);
-                    tempTV.setText(communitiesArry[i].get("name"));
-                    tempTV.setTextSize(25);
-                    tempTV.setGravity(Gravity.CENTER);
-                    tempTV.setPadding(0,50,0,0);
-                    communities.put(communitiesRefArry[i],tempTV);
-                    moreCommunitiesLayout.addView(tempTV);
-                }
+        if(location==null||locationMap.size()==0)return;
+        Map<Double,List<String>> distanceMap = new HashMap<>();
+        String[] keys = locationMap.keySet().toArray(new String[0]);
+        Location[] locations= locationMap.values().toArray(new Location[0]);
+        for(int i=0;i<locations.length;i++){
+            double dis = location.distance(locations[i]);
+            if(distanceMap.get(dis)==null)distanceMap.put(dis,new ArrayList<>(Arrays.asList(keys[i])));
+            else distanceMap.get(dis).add(keys[i]);
+        }
+        Double[] distances =  distanceMap.keySet().toArray(new Double[0]);
+        Arrays.sort(distances);
+        List<String> sortedCommunities = new ArrayList<>();
+        List<Double> sortedDistances = new ArrayList<>();
+        for (int i=0;i<distances.length;i++) {
+            List<String> names=distanceMap.get(distances[i].doubleValue());
+            for (String name: names) {
+                sortedCommunities.add(name);
+                sortedDistances.add(distances[i]);
             }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                toast("The read failed: " + databaseError.getCode());
-            }
-        });
+        }
+        initRecommendedCommunities(sortedCommunities,sortedDistances);
+    }
+    private void initRecommendedCommunities(List<String> communities, List<Double> distances){
+        recommendedCommunitiesLayout.removeAllViews();
+        TextView tempTV;
+        //int i=0;i<communities.length;i++
+        for (int i=0;i<communities.size();i++) {
+            Double distance = distances.get(i);
+            tempTV =new TextView(getApplicationContext());
+            tempTV.setOnClickListener(MainActivity.this::onClick);
+            String distanceText = distance.toString();
+            if(distance.toString().length()-distance.toString().indexOf(".")>3)distanceText = distance.toString().substring(0,distance.toString().indexOf(".")+3);
+            tempTV.setText(communities.get(i)+" - "+distanceText+"KM");
+            tempTV.setTextSize(25);
+            tempTV.setGravity(Gravity.CENTER);
+            tempTV.setPadding(0,50,0,0);
+            this.communities.put(communitiesNameToRef.get(communities.get(i)),tempTV);
+            recommendedCommunitiesLayout.addView(tempTV);
+        }
     }
 
     private void getFollowedCommunities(){

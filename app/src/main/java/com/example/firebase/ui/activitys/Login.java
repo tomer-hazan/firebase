@@ -2,7 +2,12 @@ package com.example.firebase.ui.activitys;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -28,9 +33,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     Button signUp;
     EditText name;
     EditText password;
-    User me;
     Button submit;
-    Intent intent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +46,14 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         signUp.setOnClickListener(this::onClick);
         database = FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/");
         myRef = database.getReference().child("users");
+
+        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        boolean connected = (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED);
+        if(!connected){
+            toast("you are not connected to the internet");
+            submit.setBackgroundColor(Color.GRAY);
+        }
     }
 
     @Override
@@ -57,6 +68,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                         boolean correctPassword = false;
                         for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                             if(userSnapshot.child("password").getValue().toString().equals(password.getText().toString())){
+                                name.setTextColor(Color.BLACK);
+                                password.setTextColor(Color.BLACK);
                                 Intent sendIntent = new Intent(getApplicationContext(), MainActivity.class);
                                 Global.user = new Gson().fromJson( new Gson().toJson(userSnapshot.getValue()),User.class);
                                 Global.userRef=userSnapshot.getRef();
@@ -65,11 +78,15 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                             }
                         }
                         if(!correctPassword){
-                            toast("wrong password, try again or if you want to create a new one, go to sign up");
+                            name.setTextColor(Color.BLACK);
+                            password.setTextColor(Color.RED);
+                            toast("wrong password, try again or if you want to create a new user, go to sign up");
                         }
                     }
                     else{
-                        toast("wrong user name, if you want to create a new one, go to sign up");
+                        name.setTextColor(Color.RED);
+                        password.setTextColor(Color.BLACK);
+                        toast("wrong user name, if you want to create a new user, go to sign up");
                     }
 
                 }
@@ -80,6 +97,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
             });
         }
         else if (v.getId()== signUp.getId()){
+            name.setTextColor(Color.BLACK);
+            password.setTextColor(Color.BLACK);
             Intent sendIntent = new Intent(this, SignUp.class);
             startActivity(sendIntent);
         }

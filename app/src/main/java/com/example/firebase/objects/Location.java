@@ -21,28 +21,7 @@ public class Location {
         this.longitude= longitude;
     }
     public double distance(Location other){
-        return calculateHaversineDistance(this.latitude,this.longitude,other.latitude,other.longitude);
-    }
-    private static double calculateHaversineDistance(double lat1, double lon1, double lat2, double lon2) {
-        // Radius of the Earth in kilometers
-        final double R = 6371.0;
-
-        // Convert latitude and longitude from degrees to radians
-        double lat1Rad = Math.toRadians(lat1);
-        double lon1Rad = Math.toRadians(lon1);
-        double lat2Rad = Math.toRadians(lat2);
-        double lon2Rad = Math.toRadians(lon2);
-
-        // Calculate differences in coordinates
-        double dLat = lat2Rad - lat1Rad;
-        double dLon = lon2Rad - lon1Rad;
-
-        // Haversine formula
-        double a = Math.pow(Math.sin(dLat / 2), 2) + Math.cos(lat1Rad) * Math.cos(lat2Rad) * Math.pow(Math.sin(dLon / 2), 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-        // Calculate the distance
-        return R * c;
+        return calculateDistance(this.latitude,this.longitude,other.latitude,other.longitude);
     }
     public double getMinLatBound(double tolerance){return latitude-tolerance/Math.sqrt(2);}
     public double getMaxLatBound(double tolerance){
@@ -51,5 +30,22 @@ public class Location {
     public double getMinLonBound(double tolerance){return longitude-tolerance/Math.sqrt(2);}
     public double getMaxLonBound(double tolerance){
         return longitude+tolerance/Math.sqrt(2);
+    }
+    double haversine(double val) {
+        return Math.pow(Math.sin(val / 2), 2);
+    }
+    double calculateDistance(double startLat, double startLong, double endLat, double endLong) {
+        final double EARTH_RADIUS = 6371.0;
+
+        double dLat = Math.toRadians((endLat - startLat));
+        double dLong = Math.toRadians((endLong - startLong));
+
+        startLat = Math.toRadians(startLat);
+        endLat = Math.toRadians(endLat);
+
+        double a = haversine(dLat) + Math.cos(startLat) * Math.cos(endLat) * haversine(dLong);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        return EARTH_RADIUS * c;
     }
 }
