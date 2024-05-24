@@ -145,17 +145,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             this.finish();
         } else if (view.getClass().equals(TextView.class)) {
             Intent sendIntent = new Intent(this, Community.class);
-            String[] CommunityRefArr = communitiesTextView.keySet().toArray(new String[0]);
-            TextView[] tvArr =  communitiesTextView.values().toArray(new TextView[0]);
-            for(int i=0;i<tvArr.length;i++){
-                String comName = tvArr[i].getText().toString();
-                if(comName.contains("-"))comName=comName.substring(0,comName.indexOf("-")-1);
+            for(int i=0;i<CDBArray.length;i++){
 
+                String comName = CDBArray[i].getName();
                 String viewName = ((TextView)view).getText().toString();
                 if(viewName.contains("-"))viewName = viewName.substring(0,viewName.indexOf("-")-1);
 
                 if(viewName.equals(comName)){
-                    sendIntent.putExtra("community",CommunityRefArr[i]);
+                    sendIntent.putExtra("community",CDBArray[i].getCommunityRef().getKey().toString());
                     startActivity(sendIntent);
                     break;
                 }
@@ -258,9 +255,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onDataChange(DataSnapshot dataSnapshot) {
                 HashMap<String,HashMap<String,Object>[]> map = (HashMap<String, HashMap<String,Object>[]>)dataSnapshot.getValue();
                 Object[] communitiesMapArray = map.values().toArray();
+                String[] refArray = map.keySet().toArray(new String[0]);
                 CDBArray = new CommunityDB[communitiesMapArray.length];
                 for (int i = 0; i < communitiesMapArray.length; i++) {
                     CDBArray[i]=new Gson().fromJson(new Gson().toJson(communitiesMapArray[i]),CommunityDB.class);
+                    CDBArray[i].setCommunityRef(dataSnapshot.getRef().child(refArray[i]));
                 }
 
                 initRecommendedCommunities();
@@ -297,7 +296,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             tempTV.setGravity(Gravity.CENTER);
             tempTV.setPadding(0,50,0,0);
             tempTV.setTextColor(Color.GRAY);
-            this.communitiesTextView.put(CDBArray[i].getName(),tempTV);
+            this.communitiesTextView.put(CDBArray[i].getCommunityRef().toString(),tempTV);
             recommendedCommunitiesLayout.addView(tempTV);
         }
     }
