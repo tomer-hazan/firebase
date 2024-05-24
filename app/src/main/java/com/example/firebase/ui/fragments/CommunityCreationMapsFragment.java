@@ -1,6 +1,8 @@
 package com.example.firebase.ui.fragments;
 
 
+import static com.example.firebase.ui.activitys.MainActivity.MY_PERMISSIONS_REQUEST_LOCATION;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -18,6 +20,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -125,7 +128,10 @@ public class CommunityCreationMapsFragment extends Fragment{
 
 
         }else{
-            if(!arePermissionsGranted(GPS_PERMISSIONS))toast("need GPS prmition to work");
+            if(!arePermissionsGranted(GPS_PERMISSIONS)){
+                toast("need GPS prmition to work");
+                ActivityCompat.requestPermissions(this.getActivity(), GPS_PERMISSIONS, MY_PERMISSIONS_REQUEST_LOCATION);
+            }
             if(!isGPSEnabled()){
                 toast("you need to enable GPS");
                 turnOnGPS(locationRequest);

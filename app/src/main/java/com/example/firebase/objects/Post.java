@@ -90,7 +90,6 @@ public class Post {
                     ImageView tempImg = new ImageView(context);
                     Picasso.get().load(uri).into(tempImg);
                     images.add(tempImg);
-                    util.toast("the image has been inited",context);
                     initedImages++;
                     if(initedImages==amountOfImages)isImageInit=()->true;
                     if(isImageInit.get()&&isPosterInit.get())Community.initPosts();

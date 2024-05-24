@@ -146,7 +146,6 @@ public class PostsCreation extends AppCompatActivity implements View.OnClickList
                             }).addOnFailureListener(e -> {
                                 toast("failed to load img");
                             }).addOnCompleteListener(taskSnapshot -> {
-                                toast("the image has been loaded");
                                 ImageView tempImage = new ImageView(imagesLayout.getContext());
                                 tempImage.setImageBitmap(photo);
                                 imagesLayout.addView(tempImage);

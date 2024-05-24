@@ -70,7 +70,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if (v.getId()==submit.getId()){
-            name.setTextColor(Color.BLACK);
+            name.setTextColor(Color.GRAY);
             handleUploadUser();
 
         }

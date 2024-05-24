@@ -25,7 +25,7 @@
         android:layout_marginTop="204dp"
         android:ems="10"
         android:inputType="text"
-        android:text="Name"
+        android:hint="user name"
         app:layout_constraintBottom_toTopOf="@+id/password"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.502"
@@ -40,7 +40,7 @@
         android:layout_marginBottom="232dp"
         android:ems="10"
         android:inputType="textPassword"
-        android:text="0"
+        android:hint="password"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
