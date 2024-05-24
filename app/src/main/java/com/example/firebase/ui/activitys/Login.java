@@ -68,8 +68,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                         boolean correctPassword = false;
                         for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                             if(userSnapshot.child("password").getValue().toString().equals(password.getText().toString())){
-                                name.setTextColor(Color.BLACK);
-                                password.setTextColor(Color.BLACK);
+                                name.setTextColor(Color.GRAY);
+                                password.setTextColor(Color.GRAY);
                                 Intent sendIntent = new Intent(getApplicationContext(), MainActivity.class);
                                 Global.user = new Gson().fromJson( new Gson().toJson(userSnapshot.getValue()),User.class);
                                 Global.userRef=userSnapshot.getRef();
@@ -78,14 +78,14 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                             }
                         }
                         if(!correctPassword){
-                            name.setTextColor(Color.BLACK);
+                            name.setTextColor(Color.GRAY);
                             password.setTextColor(Color.RED);
                             toast("wrong password, try again or if you want to create a new user, go to sign up");
                         }
                     }
                     else{
                         name.setTextColor(Color.RED);
-                        password.setTextColor(Color.BLACK);
+                        password.setTextColor(Color.GRAY);
                         toast("wrong user name, if you want to create a new user, go to sign up");
                     }
 
@@ -97,8 +97,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
             });
         }
         else if (v.getId()== signUp.getId()){
-            name.setTextColor(Color.BLACK);
-            password.setTextColor(Color.BLACK);
+            name.setTextColor(Color.GRAY);
+            password.setTextColor(Color.GRAY);
             Intent sendIntent = new Intent(this, SignUp.class);
             startActivity(sendIntent);
         }

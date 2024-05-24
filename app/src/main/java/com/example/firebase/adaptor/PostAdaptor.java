@@ -46,7 +46,6 @@ public class PostAdaptor extends RecyclerView.Adapter<PostAdaptor.ViewHolder> im
             boolean isRemoved = false;
             for(int i=0;i<postsHolders.length;i++){
                 if(postsHolders[i].trashCan.equals(v)){
-                    toast("the post has started self destructing",context);
                     data.get(i).selfDestruction();
                     data.remove(i);
                     //((ViewGroup)postsHolders.get(i).itemView.getParent()).removeView(postsHolders.get(i).itemView);

@@ -105,15 +105,16 @@ public class Community extends AppCompatActivity implements View.OnClickListener
         }
     }
     public static void initFollowersAndAdmins(){
-        TextView temp;
+        TextView tv;
         followersLayout.removeAllViews();
         String[] keys = currentCommunity.followers.keySet().toArray(new String[0]);
         User[] users = currentCommunity.followers.values().toArray(new User[0]);
         for(int i=0;i<keys.length;i++){
-            temp =  new TextView(currentCommunity.context);
-            temp.setText(users[i].username);
-            temp.setGravity(View.TEXT_ALIGNMENT_CENTER);
-            followersLayout.addView(temp);
+            tv =  new TextView(currentCommunity.context);
+            tv.setText(users[i].username);
+            tv.setTextColor(Color.GRAY);
+            tv.setGravity(View.TEXT_ALIGNMENT_CENTER);
+            followersLayout.addView(tv);
             if(keys[i].equals(Global.userRef.getKey())){
                 isFollowing=true;
                 renderFollowButton();
@@ -124,10 +125,11 @@ public class Community extends AppCompatActivity implements View.OnClickListener
         keys = currentCommunity.admins.keySet().toArray(new String[0]);
         users = currentCommunity.admins.values().toArray(new User[0]);
         for(int i=0;i<keys.length;i++){
-            temp =  new TextView(currentCommunity.context);
-            temp.setText(users[i].username);
-            temp.setGravity(View.TEXT_ALIGNMENT_CENTER);
-            adminsLayout.addView(temp);
+            tv =  new TextView(currentCommunity.context);
+            tv.setText(users[i].username);
+            tv.setTextColor(Color.GRAY);
+            tv.setGravity(View.TEXT_ALIGNMENT_CENTER);
+            adminsLayout.addView(tv);
             if(keys[i].equals(Global.userRef.getKey())){
                 isOwner=true;
                 activityLayout.removeView(followButton);

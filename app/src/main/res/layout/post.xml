@@ -29,52 +29,53 @@
 
     <TextView
         android:id="@+id/title"
-        android:layout_width="410dp"
-        android:layout_height="52dp"
+        android:layout_width="309dp"
+        android:layout_height="49dp"
         android:gravity="center"
         android:text="TextView"
-        android:textSize="25dp"
+        android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.539"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/poster"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_width="125dp"
+        android:layout_height="21dp"
+        android:layout_marginTop="64dp"
         android:gravity="left"
+        android:paddingLeft="10dp"
         android:text="TextView"
         android:textSize="10dp"
-        android:paddingLeft="10dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.179"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/title" />
 
     <TextView
         android:id="@+id/content"
-        android:layout_width="390dp"
+        android:layout_width="319dp"
         android:layout_height="70dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/small_border"
         android:text="I lost my beloved cat yesterday on the side of the road 😢 💔 and I need you to help me find it "
         android:textSize="15dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.552"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/poster" />
 
     <ImageView
         android:id="@+id/trashCanImage"
-        android:layout_width="57dp"
-        android:layout_height="70dp"
+        android:layout_width="42dp"
+        android:layout_height="48dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.839"
+        app:layout_constraintStart_toEndOf="@+id/poster"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/black_trash_can" />
+        app:layout_constraintVertical_bias="0.169"
+        app:srcCompat="@drawable/white_trash_can" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
