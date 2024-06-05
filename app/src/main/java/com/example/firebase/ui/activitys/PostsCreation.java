@@ -33,6 +33,7 @@ import com.example.firebase.objects.CommunityDB;
 import com.example.firebase.objects.Location;
 import com.example.firebase.objects.PostDB;
 import com.example.firebase.ui.fragments.CommunityCreationMapsFragment;
+import com.example.firebase.util;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -102,11 +103,13 @@ public class PostsCreation extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View view) {
         if (view.getId() == submit.getId()) {
-            uploadPost();
-            toast("uploaded successfully");
-            Intent sendIntent = new Intent(getApplicationContext(), Community.class);
-            sendIntent.putExtra("community",Global.community.communityRef.getKey());
-            startActivity(sendIntent);
+            if(util.isCorrectInput(title.getText().toString(),getApplicationContext())&&util.isCorrectInput(content.getText().toString(),getApplicationContext())){
+                uploadPost();
+                toast("uploaded successfully");
+                Intent sendIntent = new Intent(getApplicationContext(), Community.class);
+                sendIntent.putExtra("community",Global.community.communityRef.getKey());
+                startActivity(sendIntent);
+            }
         }
         else if (view.getId() == addImage.getId()) {
                 if (arePermissionsGranted(this.getApplicationContext(),CAMERA_PERMISSIONS)) {
