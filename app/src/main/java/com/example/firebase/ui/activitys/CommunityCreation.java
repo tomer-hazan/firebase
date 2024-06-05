@@ -26,6 +26,7 @@ import com.example.firebase.objects.Location;
 import com.example.firebase.objects.User;
 import com.example.firebase.ui.fragments.CommunityCreationMapsFragment;
 import com.example.firebase.ui.fragments.CommunityMapsFragment;
+import com.example.firebase.util;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -108,6 +109,7 @@ public class CommunityCreation extends AppCompatActivity implements View.OnClick
 
     @Override
     public void onClick(View v) {
+        if(!(util.isCorrectInput(name.getText().toString(),getApplicationContext())&&util.isCorrectInput(radius.getText().toString(),getApplicationContext())&&util.isCorrectInput(longitude.getText().toString(),getApplicationContext())&&util.isCorrectInput(latitude.getText().toString(),getApplicationContext())))return;
         radius.setTextColor(Color.BLACK);
         name.setTextColor(Color.BLACK);
         try {

@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.example.firebase.Global;
 import com.example.firebase.R;
 import com.example.firebase.objects.User;
+import com.example.firebase.util;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -71,7 +72,9 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
     public void onClick(View v) {
         if (v.getId()==submit.getId()){
             name.setTextColor(Color.GRAY);
-            handleUploadUser();
+            if(util.isCorrectInput(name.getText().toString(),getApplicationContext())&&util.isCorrectInput(email.getText().toString(),getApplicationContext())&&util.isCorrectInput(phoneNumber.getText().toString(),getApplicationContext())&&util.isCorrectInput(password.getText().toString(),getApplicationContext())){
+                handleUploadUser();
+            }
 
         }
         else if (v.getId()==login.getId()){
