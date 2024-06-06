@@ -37,6 +37,7 @@ public class Community extends AppCompatActivity implements View.OnClickListener
     static CommunityDB CDB;
     static Button postCreation;
     static Button followButton;
+    Button homeButton;
     static ConstraintLayout activityLayout;
     static DatabaseReference currentCommunityRef;
     static boolean isFollowing=false;
@@ -53,8 +54,10 @@ public class Community extends AppCompatActivity implements View.OnClickListener
         adminsLayout = findViewById(R.id.admins);
         postCreation = findViewById(R.id.postCreation);
         followButton = findViewById(R.id.followButton);
+        homeButton = findViewById(R.id.home);
         postCreation.setOnClickListener(this::onClick);
         followButton.setOnClickListener(this::onClick);
+        homeButton.setOnClickListener(this::onClick);
         CDB = new CommunityDB();
         isFollowing=false;
         isOwner=false;
@@ -163,6 +166,10 @@ public class Community extends AppCompatActivity implements View.OnClickListener
             }
             isFollowing=!isFollowing;
             renderFollowButton();
+        } else if (v.getId()==homeButton.getId()) {
+            Intent sendIntent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(sendIntent);
+            finish();
         }
 
     }

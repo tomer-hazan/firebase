@@ -57,6 +57,7 @@ public class PostsCreation extends AppCompatActivity implements View.OnClickList
     static Button submit;
     LinearLayout imagesLayout;
     Button addImage;
+    Button homeButton;
     ActivityResultLauncher<Intent> cameraActivity;
     DatabaseReference communityRef;
     DatabaseReference postsRef;
@@ -80,6 +81,8 @@ public class PostsCreation extends AppCompatActivity implements View.OnClickList
         imagesLayout = findViewById(R.id.imagesLayout);
         addImage = findViewById(R.id.addImage);
         addImage.setOnClickListener(this::onClick);
+        homeButton = findViewById(R.id.home);
+        homeButton.setOnClickListener(this::onClick);
         communityRef=Global.community.communityRef.child("posts");
         postsRef = FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("posts");
         Intent intent = getIntent();
@@ -118,6 +121,10 @@ public class PostsCreation extends AppCompatActivity implements View.OnClickList
                 } else {
                     toast("need camera to work");
                 }
+        }else if (view.getId()==homeButton.getId()) {
+            Intent sendIntent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(sendIntent);
+            finish();
         }
     }
     private void toast(String text){

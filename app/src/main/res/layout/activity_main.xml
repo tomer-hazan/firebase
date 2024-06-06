@@ -77,16 +77,16 @@
     <TextView
         android:id="@+id/text"
         android:layout_width="420dp"
-        android:layout_height="94dp"
+        android:layout_height="84dp"
         android:gravity="center"
         android:text="Home page"
         android:textSize="75dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.555"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.024" />
 
     <TextView
         android:id="@+id/text3"
@@ -162,5 +162,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ownedCommunities"
         app:layout_constraintVertical_bias="0.075" />
+
+    <Button
+        android:id="@+id/refresh"
+        android:layout_width="80dp"
+        android:layout_height="31dp"
+        android:text="refresh"
+        android:textSize="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.001" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

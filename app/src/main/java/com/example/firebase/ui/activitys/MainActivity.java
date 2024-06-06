@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     LinearLayout ownedCommunitiesLayout;
     private LocationRequest locationRequest;
     Button communityBtn;
+    Button refreshButton;
     private Location location;
     Map<String,Location> locationMap;
     private static final int REQUEST_CAMERA_PERMISSION = 1;
@@ -93,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         recommendedCommunitiesLayout= findViewById(R.id.recommendedCommunitiesLayout);
         ownedCommunitiesLayout = findViewById(R.id.ownedCommunitiesLayout);
         followedCommunitiesLayout = findViewById(R.id.followedCommunitiesLayout);
+        refreshButton=findViewById(R.id.refresh);
         communityBtn = findViewById(R.id.community);
         locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -102,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getGPS();
         getUserIfNull();
         communityBtn.setOnClickListener(this::onClick);
+        refreshButton.setOnClickListener(this::onClick);
         getOtherCommunities();
         getOwnedCommunities();
         getFollowedCommunities();
@@ -154,12 +157,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if(viewName.equals(comName)){
                     sendIntent.putExtra("community",CDBArray[i].getCommunityRef().getKey().toString());
                     startActivity(sendIntent);
+                    finish();
                     break;
                 }
             }
 
 
-        }
+        }else if (view.getId()==refreshButton.getId()) {
+        Intent sendIntent = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(sendIntent);
+        finish();
+    }
 
     }
 
@@ -280,7 +288,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initRecommendedCommunities(){
-        if(location==null||CDBArray.length==0)return;
+        if(location==null||CDBArray==null||CDBArray.length==0)return;
         CDBArray = sortCommunitiesByDistance();
         recommendedCommunitiesLayout.removeAllViews();
         TextView tempTV;

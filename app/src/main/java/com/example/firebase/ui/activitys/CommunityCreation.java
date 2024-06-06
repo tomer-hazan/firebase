@@ -47,6 +47,7 @@ public class CommunityCreation extends AppCompatActivity implements View.OnClick
     static TextView latitude;
     static EditText radius;
     static Button submit;
+    Button homeButton;
     static CommunityDB CDB;
     DatabaseReference myRef;
     CommunityCreationMapsFragment myFragment;
@@ -60,6 +61,8 @@ public class CommunityCreation extends AppCompatActivity implements View.OnClick
         latitude = findViewById(R.id.latitude);
         radius = findViewById(R.id.radius);
         submit = findViewById(R.id.submit);
+        homeButton = findViewById(R.id.home);
+        homeButton.setOnClickListener(this::onClick);
         submit.setBackgroundColor(Color.GRAY);
         myRef = FirebaseDatabase.getInstance("https://th-grade-34080-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("communities");
         createMapFragment();
@@ -109,37 +112,44 @@ public class CommunityCreation extends AppCompatActivity implements View.OnClick
 
     @Override
     public void onClick(View v) {
-        if(!(util.isCorrectInput(name.getText().toString(),getApplicationContext())&&util.isCorrectInput(radius.getText().toString(),getApplicationContext())&&util.isCorrectInput(longitude.getText().toString(),getApplicationContext())&&util.isCorrectInput(latitude.getText().toString(),getApplicationContext())))return;
-        radius.setTextColor(Color.BLACK);
-        name.setTextColor(Color.BLACK);
-        try {
-            Integer.valueOf( radius.getText().toString());
-        }catch (Exception e){
-            radius.setTextColor(Color.RED);
-            toast("invalid community radius");
-            return;
-        }
-        Query query = myRef.orderByChild("name").equalTo(name.getText().toString());
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                query.removeEventListener(this);
-                if (dataSnapshot.hasChildren()){
-                    toast("this community name already exists, please choose another one");
-                    name.setTextColor(Color.RED);
-                }
-                else{
-                    uploadCommunity();
-                    Intent sendIntent = new Intent(getApplicationContext(), MainActivity.class);
-                    startActivity(sendIntent);
+        if (v.getId()==submit.getId()) {
+            if (!(util.isCorrectInput(name.getText().toString(), getApplicationContext()) && util.isCorrectInput(radius.getText().toString(), getApplicationContext()) && util.isCorrectInput(longitude.getText().toString(), getApplicationContext()) && util.isCorrectInput(latitude.getText().toString(), getApplicationContext())))
+                return;
+            radius.setTextColor(Color.BLACK);
+            name.setTextColor(Color.BLACK);
+            try {
+                Integer.valueOf(radius.getText().toString());
+            } catch (Exception e) {
+                radius.setTextColor(Color.RED);
+                toast("invalid community radius");
+                return;
+            }
+            Query query = myRef.orderByChild("name").equalTo(name.getText().toString());
+            query.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    query.removeEventListener(this);
+                    if (dataSnapshot.hasChildren()) {
+                        toast("this community name already exists, please choose another one");
+                        name.setTextColor(Color.RED);
+                    } else {
+                        uploadCommunity();
+                        Intent sendIntent = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(sendIntent);
+                    }
+
                 }
 
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                toast("The read failed: " + databaseError.getCode());
-            }
-        });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    toast("The read failed: " + databaseError.getCode());
+                }
+            });
+        }else if (v.getId()==homeButton.getId()) {
+            Intent sendIntent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(sendIntent);
+            finish();
+        }
     }
     private void toast(String text){
         Toast t = new Toast(getApplicationContext());
